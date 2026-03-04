@@ -41,23 +41,46 @@ export default function BuilderPage() {
 
 
   const handleSave = async () => {
-  const res = await fetch("/api/resume", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      name,
-      email,
-      summary,
-      experience,
-    }),
-  });
+    // Validate required fields
+    if (!name.trim()) {
+      alert("Please enter your name");
+      return;
+    }
 
-  if (res.ok) {
-    alert("Resume saved successfully!");
-  } else {
-    alert("Error saving resume");
-  }
-};
+    if (!email.trim()) {
+      alert("Please enter your email");
+      return;
+    }
+
+    try {
+      const res = await fetch("/api/resume", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: name.trim(),
+          email: email.trim(),
+          summary: summary.trim(),
+          experience,
+        }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.error || data.message || "Error saving resume");
+      }
+
+      alert("Resume saved successfully!");
+      // Reset form
+      setName("");
+      setEmail("");
+      setSummary("");
+      setExperience([{ company: "", role: "", description: "" }]);
+    } catch (error: any) {
+      console.error("Save error:", error.message || error);
+      alert(`Error saving resume: ${error.message || "Unknown error"}`);
+    }
+  };
 
   return (
     <div className="h-full">
