@@ -33,31 +33,37 @@ export default function DashboardPage() {
   };
 
   const deleteResume = async (id: string) => {
-    const confirmDelete = confirm("Are you sure you want to delete this resume?");
-    if (!confirmDelete) return;
+  const confirmDelete = confirm("Are you sure you want to delete this resume?");
+  if (!confirmDelete) return;
 
-    setDeletingId(id);
-    try {
-      const res = await fetch(`/api/resume/${id}`, {
-        method: "DELETE",
-      });
+  setDeletingId(id);
+  try {
+    const res = await fetch(`/api/resume/${id}`, {
+      method: "DELETE",
+    });
 
-      const data = await res.json();
-
-      if (!res.ok) {
-        throw new Error(data.error || data.message || "Delete failed");
+    if (!res.ok) {
+      // safely try to parse error, fall back to status text
+      let errorMessage = `Delete failed (${res.status})`;
+      try {
+        const errorData = await res.json();
+        errorMessage = errorData.error || errorData.message || errorMessage;
+      } catch {
+        // body was empty or not JSON — use the fallback message above
       }
-
-      // Optimistically remove from UI without refetching
-      setResumes((prev) => prev.filter((r) => r._id !== id));
-    } catch (error: any) {
-      console.error("Delete error:", error.message || error);
-      alert(`Delete failed: ${error.message || "Unknown error"}`);
-    } finally {
-      setDeletingId(null);
+      throw new Error(errorMessage);
     }
-  };
 
+    // Only parse JSON if response was successful
+    await res.json();
+    setResumes((prev) => prev.filter((r) => r._id !== id));
+  } catch (error: any) {
+    console.error("Delete error:", error.message || error);
+    alert(`Delete failed: ${error.message || "Unknown error"}`);
+  } finally {
+    setDeletingId(null);
+  }
+};
   const viewResume = (id: string) => {
     // TODO: navigate to /resume/[id] view page
     console.log("View resume with ID:", id);

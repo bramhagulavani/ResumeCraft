@@ -1,48 +1,51 @@
 import { NextResponse } from "next/server";
 import { connectToDatabase } from "@/lib/mongodb";
 import Resume from "@/models/Resume";
+import mongoose from "mongoose";
 
-export async function GET() {
+export async function DELETE(
+  request: Request,
+  context: { params: Promise<{ id: string }> }
+) {
   try {
     await connectToDatabase();
 
-    const resumes = await Resume.find().sort({ createdAt: -1 }).lean();
+    // In Next.js 13+/14+ App Router, params is a Promise — must be awaited
+    const { id } = await context.params;
 
-    const sanitized = resumes.map((r: any) => ({
-      ...r,
-      _id: r._id.toString(),
-    }));
+    if (!id) {
+      return NextResponse.json(
+        { message: "Resume ID is required" },
+        { status: 400 }
+      );
+    }
 
-    return NextResponse.json(sanitized, { status: 200 });
-  } catch (error: any) {
-    console.error("GET ERROR:", error);
+    const trimmedId = id.trim();
+
+    if (!mongoose.Types.ObjectId.isValid(trimmedId)) {
+      return NextResponse.json(
+        { message: "Invalid resume ID format" },
+        { status: 400 }
+      );
+    }
+
+    const deletedResume = await Resume.findByIdAndDelete(trimmedId);
+
+    if (!deletedResume) {
+      return NextResponse.json(
+        { message: "Resume not found" },
+        { status: 404 }
+      );
+    }
+
     return NextResponse.json(
-      { message: "Error fetching resumes" },
-      { status: 500 }
+      { message: "Resume deleted successfully" },
+      { status: 200 }
     );
-  }
-}
-
-export async function POST(req: Request) {
-  try {
-    await connectToDatabase();
-
-    const body = await req.json();
-    const newResume = await Resume.create(body);
-
-    const responseData = {
-      ...newResume.toObject(),
-      _id: newResume._id.toString(),
-    };
-
-    return NextResponse.json(
-      { message: "Resume saved successfully", data: responseData },
-      { status: 201 }
-    );
   } catch (error: any) {
-    console.error("API ERROR:", error);
+    console.error("Delete error:", error.message || error);
     return NextResponse.json(
-      { message: "Error saving resume", error: error.message },
+      { message: "Server error", error: error.message || "Unknown error" },
       { status: 500 }
     );
   }
