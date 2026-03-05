@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-
+import { useRouter } from "next/navigation";
 interface Resume {
   _id: string;
   name: string;
@@ -11,6 +11,7 @@ interface Resume {
 }
 
 export default function DashboardPage() {
+  const router = useRouter();
   const [resumes, setResumes] = useState<Resume[]>([]);
   const [loading, setLoading] = useState(true);
   const [deletingId, setDeletingId] = useState<string | null>(null);
@@ -65,11 +66,8 @@ export default function DashboardPage() {
   }
 };
   const viewResume = (id: string) => {
-    // TODO: navigate to /resume/[id] view page
-    console.log("View resume with ID:", id);
-    alert("View functionality coming soon!");
-  };
-
+  router.push(`/resume/${id}`);
+};
   return (
     <div>
       <h1 className="text-3xl font-bold mb-6">My Resumes</h1>

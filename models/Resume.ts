@@ -1,25 +1,39 @@
-import mongoose, { Schema, models } from "mongoose";
+import mongoose from "mongoose";
 
-const ExperienceSchema = new Schema({
-  company: String,
-  role: String,
-  description: String,
-});
-
-const ResumeSchema = new Schema(
+const ResumeSchema = new mongoose.Schema(
   {
-    name: {
-      type: String,
-      required: true,
-    },
+    name: String,
     email: String,
     summary: String,
-    experience: [ExperienceSchema],
+
+    skills: [String],
+
+    education: [
+      {
+        college: String,
+        degree: String,
+        year: String,
+      },
+    ],
+
+    experience: [
+      {
+        company: String,
+        role: String,
+        description: String,
+      },
+    ],
+
+    projects: [
+      {
+        title: String,
+        description: String,
+        tech: String,
+      },
+    ],
   },
   { timestamps: true }
 );
 
-const Resume =
-  models.Resume || mongoose.model("Resume", ResumeSchema);
-
-export default Resume;
+export default mongoose.models.Resume ||
+  mongoose.model("Resume", ResumeSchema);
