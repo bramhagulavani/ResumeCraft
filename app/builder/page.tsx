@@ -1,24 +1,19 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useSearchParams, useRouter } from "next/navigation";
+import ClassicTemplate from "@/components/resumeTemplates/ClassicTemplate";
+import ModernTemplate from "@/components/resumeTemplates/ModernTemplate";
+import MinimalTemplate from "@/components/resumeTemplates/MinimalTemplate";
+import { ResumeData } from "@/components/resumeTemplates/types";
 
-interface Experience {
-  company: string;
-  role: string;
-  description: string;
-}
+type TemplateKey = "classic" | "modern" | "minimal";
 
-interface Education {
-  college: string;
-  degree: string;
-  year: string;
-}
-
-interface Project {
-  title: string;
-  description: string;
-  tech: string;
-}
+const TEMPLATE_META: Record<TemplateKey, { label: string }> = {
+  classic: { label: "Classic" },
+  modern:  { label: "Modern"  },
+  minimal: { label: "Minimal" },
+};
 
 const SectionHeader = ({ children }: { children: React.ReactNode }) => (
   <h3 className="text-[11px] font-bold tracking-[0.2em] uppercase text-slate-400 mb-3 mt-6 first:mt-0">
@@ -26,16 +21,8 @@ const SectionHeader = ({ children }: { children: React.ReactNode }) => (
   </h3>
 );
 
-const FormInput = ({
-  placeholder,
-  value,
-  onChange,
-  type = "text",
-}: {
-  placeholder: string;
-  value: string;
-  onChange: (v: string) => void;
-  type?: string;
+const FormInput = ({ placeholder, value, onChange, type = "text" }: {
+  placeholder: string; value: string; onChange: (v: string) => void; type?: string;
 }) => (
   <input
     type={type}
@@ -46,16 +33,8 @@ const FormInput = ({
   />
 );
 
-const FormTextarea = ({
-  placeholder,
-  value,
-  onChange,
-  rows = 3,
-}: {
-  placeholder: string;
-  value: string;
-  onChange: (v: string) => void;
-  rows?: number;
+const FormTextarea = ({ placeholder, value, onChange, rows = 3 }: {
+  placeholder: string; value: string; onChange: (v: string) => void; rows?: number;
 }) => (
   <textarea
     placeholder={placeholder}
@@ -67,86 +46,117 @@ const FormTextarea = ({
 );
 
 export default function BuilderPage() {
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const resumeId = searchParams.get("id"); // present when editing, null when creating
+
+  const [template, setTemplate] = useState<TemplateKey>("classic");
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [summary, setSummary] = useState("");
   const [skills, setSkills] = useState<string[]>([""]);
-  const [experience, setExperience] = useState<Experience[]>([
-    { company: "", role: "", description: "" },
-  ]);
-  const [education, setEducation] = useState<Education[]>([
-    { college: "", degree: "", year: "" },
-  ]);
-  const [projects, setProjects] = useState<Project[]>([
-    { title: "", description: "", tech: "" },
-  ]);
+  const [experience, setExperience] = useState<ResumeData["experience"]>([{ company: "", role: "", description: "" }]);
+  const [education, setEducation] = useState<ResumeData["education"]>([{ college: "", degree: "", year: "" }]);
+  const [projects, setProjects] = useState<ResumeData["projects"]>([{ title: "", description: "", tech: "" }]);
   const [saving, setSaving] = useState(false);
+  const [downloading, setDownloading] = useState(false);
+  const [loadingResume, setLoadingResume] = useState(false);
 
-  // Skills
-  const handleSkillChange = (index: number, value: string) => {
-    const updated = [...skills];
-    updated[index] = value;
-    setSkills(updated);
-  };
+  // ── Prefill form when editing an existing resume ──
+  // ✅ useEffect must be BEFORE return — hooks can never come after return
+  useEffect(() => {
+    if (!resumeId) return;
+
+    const fetchResume = async () => {
+      setLoadingResume(true);
+      try {
+        const res = await fetch(`/api/resume/${resumeId}`);
+        if (!res.ok) throw new Error("Failed to load resume");
+        const data = await res.json();
+
+        setName(data.name || "");
+        setEmail(data.email || "");
+        setSummary(data.summary || "");
+        setSkills(data.skills?.length ? data.skills : [""]);
+        setExperience(data.experience?.length ? data.experience : [{ company: "", role: "", description: "" }]);
+        setEducation(data.education?.length ? data.education : [{ college: "", degree: "", year: "" }]);
+        setProjects(data.projects?.length ? data.projects : [{ title: "", description: "", tech: "" }]);
+        setTemplate(data.template || "classic");
+      } catch (error) {
+        alert("Failed to load resume for editing.");
+      } finally {
+        setLoadingResume(false);
+      }
+    };
+
+    fetchResume();
+  }, [resumeId]);
+
+  // ── Skills ──
+  const handleSkillChange = (i: number, v: string) => { const u = [...skills]; u[i] = v; setSkills(u); };
   const addSkill = () => setSkills([...skills, ""]);
-  const removeSkill = (index: number) => setSkills(skills.filter((_, i) => i !== index));
+  const removeSkill = (i: number) => setSkills(skills.filter((_, j) => j !== i));
 
-  // Experience
-  const handleExperienceChange = (index: number, field: keyof Experience, value: string) => {
-    const updated = [...experience];
-    updated[index][field] = value;
-    setExperience(updated);
-  };
-  const addExperience = () => setExperience([...experience, { company: "", role: "", description: "" }]);
-  const removeExperience = (index: number) => setExperience(experience.filter((_, i) => i !== index));
+  // ── Experience ──
+  const handleExpChange = (i: number, field: keyof ResumeData["experience"][0], v: string) => { const u = [...experience]; u[i][field] = v; setExperience(u); };
+  const addExp = () => setExperience([...experience, { company: "", role: "", description: "" }]);
+  const removeExp = (i: number) => setExperience(experience.filter((_, j) => j !== i));
 
-  // Education
-  const handleEducationChange = (index: number, field: keyof Education, value: string) => {
-    const updated = [...education];
-    updated[index][field] = value;
-    setEducation(updated);
-  };
-  const addEducation = () => setEducation([...education, { college: "", degree: "", year: "" }]);
-  const removeEducation = (index: number) => setEducation(education.filter((_, i) => i !== index));
+  // ── Education ──
+  const handleEduChange = (i: number, field: keyof ResumeData["education"][0], v: string) => { const u = [...education]; u[i][field] = v; setEducation(u); };
+  const addEdu = () => setEducation([...education, { college: "", degree: "", year: "" }]);
+  const removeEdu = (i: number) => setEducation(education.filter((_, j) => j !== i));
 
-  // Projects
-  const handleProjectChange = (index: number, field: keyof Project, value: string) => {
-    const updated = [...projects];
-    updated[index][field] = value;
-    setProjects(updated);
-  };
-  const addProject = () => setProjects([...projects, { title: "", description: "", tech: "" }]);
-  const removeProject = (index: number) => setProjects(projects.filter((_, i) => i !== index));
+  // ── Projects ──
+  const handleProjChange = (i: number, field: keyof ResumeData["projects"][0], v: string) => { const u = [...projects]; u[i][field] = v; setProjects(u); };
+  const addProj = () => setProjects([...projects, { title: "", description: "", tech: "" }]);
+  const removeProj = (i: number) => setProjects(projects.filter((_, j) => j !== i));
 
-  // Save
+  // ── Save (POST for new, PUT for edit) ──
   const handleSave = async () => {
     if (!name.trim()) { alert("Please enter your name"); return; }
     if (!email.trim()) { alert("Please enter your email"); return; }
 
     setSaving(true);
     try {
-      const res = await fetch("/api/resume", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          name: name.trim(),
-          email: email.trim(),
-          summary: summary.trim(),
-          skills: skills.filter((s) => s.trim() !== ""),
-          experience,
-          education,
-          projects,
-        }),
-      });
+      const payload = {
+        name: name.trim(), email: email.trim(), summary: summary.trim(),
+        skills: skills.filter((s) => s.trim() !== ""),
+        experience, education, projects, template,
+      };
+
+      let res;
+      if (resumeId) {
+        // ✅ Editing existing resume — use PUT
+        res = await fetch(`/api/resume/${resumeId}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        });
+      } else {
+        // ✅ Creating new resume — use POST
+        res = await fetch("/api/resume", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        });
+      }
 
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || data.message || "Error saving resume");
 
-      alert("Resume saved successfully!");
-      setName(""); setEmail(""); setSummary(""); setSkills([""]);
-      setExperience([{ company: "", role: "", description: "" }]);
-      setEducation([{ college: "", degree: "", year: "" }]);
-      setProjects([{ title: "", description: "", tech: "" }]);
+      alert(resumeId ? "Resume updated successfully!" : "Resume saved successfully!");
+
+      if (resumeId) {
+        // After editing, go back to the resume view
+        router.push(`/resume/${resumeId}`);
+      } else {
+        // After creating, reset the form
+        setName(""); setEmail(""); setSummary(""); setSkills([""]);
+        setExperience([{ company: "", role: "", description: "" }]);
+        setEducation([{ college: "", degree: "", year: "" }]);
+        setProjects([{ title: "", description: "", tech: "" }]);
+      }
     } catch (error: any) {
       alert(`Error saving resume: ${error.message || "Unknown error"}`);
     } finally {
@@ -154,22 +164,68 @@ export default function BuilderPage() {
     }
   };
 
+  // ── Download PDF ──
+  const downloadPDF = async () => {
+    const element = document.getElementById("resume-preview");
+    if (!element) { alert("Nothing to download yet — fill in the form first."); return; }
+    setDownloading(true);
+    try {
+      const html2pdf = (await import("html2pdf.js")).default;
+      const opt = {
+        margin: 0.5,
+        filename: `${name.trim() || "resume"}.pdf`,
+        image: { type: "jpeg", quality: 0.98 },
+        html2canvas: { scale: 2, useCORS: true },
+        jsPDF: { unit: "in", format: "letter", orientation: "portrait" },
+      };
+      await html2pdf().set(opt).from(element).save();
+    } catch (error: any) {
+      alert(`PDF download failed: ${error.message || "Unknown error"}`);
+    } finally {
+      setDownloading(false);
+    }
+  };
+
   const filledSkills = skills.filter((s) => s.trim());
   const isEmpty = !name && !email && !summary && filledSkills.length === 0;
+
+  const resumeData: ResumeData = {
+    name, email, summary,
+    skills: filledSkills,
+    experience, education, projects,
+  };
+
+  if (loadingResume) {
+    return (
+      <div className="h-full flex items-center justify-center">
+        <p className="text-slate-400 text-sm">Loading resume...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="h-full flex flex-col">
 
-      {/* Top bar */}
+      {/* ── Top bar ── */}
       <div className="flex items-center justify-between mb-5">
-        <h1 className="text-2xl font-bold tracking-tight">Resume Builder</h1>
-        <button
-          onClick={handleSave}
-          disabled={saving}
-          className="px-5 py-2 bg-violet-600 hover:bg-violet-500 disabled:opacity-50 disabled:cursor-not-allowed rounded-lg text-sm font-semibold transition-all shadow-lg shadow-violet-900/30"
-        >
-          {saving ? "Saving..." : "Save Resume"}
-        </button>
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight">
+            {resumeId ? "Edit Resume" : "Resume Builder"}
+          </h1>
+          {resumeId && (
+            <p className="text-xs text-slate-500 mt-0.5">Editing existing resume</p>
+          )}
+        </div>
+        <div className="flex gap-3">
+          <button onClick={downloadPDF} disabled={downloading || isEmpty}
+            className="px-5 py-2 bg-slate-700 hover:bg-slate-600 disabled:opacity-40 disabled:cursor-not-allowed rounded-lg text-sm font-semibold transition-all">
+            {downloading ? "Generating..." : "⬇ Download PDF"}
+          </button>
+          <button onClick={handleSave} disabled={saving}
+            className="px-5 py-2 bg-violet-600 hover:bg-violet-500 disabled:opacity-50 disabled:cursor-not-allowed rounded-lg text-sm font-semibold transition-all shadow-lg shadow-violet-900/30">
+            {saving ? "Saving..." : resumeId ? "Update Resume" : "Save Resume"}
+          </button>
+        </div>
       </div>
 
       <div className="grid grid-cols-2 gap-6 flex-1 min-h-0">
@@ -185,219 +241,105 @@ export default function BuilderPage() {
             </div>
 
             <SectionHeader>Professional Summary</SectionHeader>
-            <FormTextarea
-              placeholder="Write a short professional summary..."
-              value={summary}
-              onChange={setSummary}
-              rows={4}
-            />
+            <FormTextarea placeholder="Write a short professional summary..." value={summary} onChange={setSummary} rows={4} />
 
             <SectionHeader>Skills</SectionHeader>
             <div className="space-y-2">
-              {skills.map((skill, index) => (
-                <div key={index} className="flex gap-2 items-center">
-                  <FormInput
-                    placeholder="e.g. React, Node.js, TypeScript"
-                    value={skill}
-                    onChange={(v) => handleSkillChange(index, v)}
-                  />
+              {skills.map((skill, i) => (
+                <div key={i} className="flex gap-2 items-center">
+                  <FormInput placeholder="e.g. React, Node.js, TypeScript" value={skill} onChange={(v) => handleSkillChange(i, v)} />
                   {skills.length > 1 && (
-                    <button
-                      onClick={() => removeSkill(index)}
-                      className="text-slate-500 hover:text-rose-400 transition-colors text-xl leading-none flex-shrink-0"
-                    >
-                      ×
-                    </button>
+                    <button onClick={() => removeSkill(i)} className="text-slate-500 hover:text-rose-400 transition-colors text-xl leading-none flex-shrink-0">×</button>
                   )}
                 </div>
               ))}
-              <button onClick={addSkill} className="text-xs text-violet-400 hover:text-violet-300 transition-colors font-medium">
-                + Add Skill
-              </button>
+              <button onClick={addSkill} className="text-xs text-violet-400 hover:text-violet-300 transition-colors font-medium">+ Add Skill</button>
             </div>
 
             <SectionHeader>Experience</SectionHeader>
             <div className="space-y-3">
-              {experience.map((exp, index) => (
-                <div key={index} className="bg-slate-800/50 border border-slate-700/50 rounded-xl p-3 space-y-2">
+              {experience.map((exp, i) => (
+                <div key={i} className="bg-slate-800/50 border border-slate-700/50 rounded-xl p-3 space-y-2">
                   <div className="grid grid-cols-2 gap-2">
-                    <FormInput placeholder="Role / Position" value={exp.role} onChange={(v) => handleExperienceChange(index, "role", v)} />
-                    <FormInput placeholder="Company" value={exp.company} onChange={(v) => handleExperienceChange(index, "company", v)} />
+                    <FormInput placeholder="Role / Position" value={exp.role} onChange={(v) => handleExpChange(i, "role", v)} />
+                    <FormInput placeholder="Company" value={exp.company} onChange={(v) => handleExpChange(i, "company", v)} />
                   </div>
-                  <FormTextarea placeholder="Responsibilities and achievements..." value={exp.description} onChange={(v) => handleExperienceChange(index, "description", v)} rows={2} />
+                  <FormTextarea placeholder="Responsibilities and achievements..." value={exp.description} onChange={(v) => handleExpChange(i, "description", v)} rows={2} />
                   {experience.length > 1 && (
-                    <button onClick={() => removeExperience(index)} className="text-xs text-rose-400/70 hover:text-rose-400 transition-colors">
-                      Remove entry
-                    </button>
+                    <button onClick={() => removeExp(i)} className="text-xs text-rose-400/70 hover:text-rose-400 transition-colors">Remove entry</button>
                   )}
                 </div>
               ))}
-              <button onClick={addExperience} className="text-xs text-violet-400 hover:text-violet-300 transition-colors font-medium">
-                + Add Experience
-              </button>
+              <button onClick={addExp} className="text-xs text-violet-400 hover:text-violet-300 transition-colors font-medium">+ Add Experience</button>
             </div>
 
             <SectionHeader>Education</SectionHeader>
             <div className="space-y-3">
-              {education.map((edu, index) => (
-                <div key={index} className="bg-slate-800/50 border border-slate-700/50 rounded-xl p-3 space-y-2">
-                  <FormInput placeholder="College / University" value={edu.college} onChange={(v) => handleEducationChange(index, "college", v)} />
+              {education.map((edu, i) => (
+                <div key={i} className="bg-slate-800/50 border border-slate-700/50 rounded-xl p-3 space-y-2">
+                  <FormInput placeholder="College / University" value={edu.college} onChange={(v) => handleEduChange(i, "college", v)} />
                   <div className="grid grid-cols-2 gap-2">
-                    <FormInput placeholder="Degree" value={edu.degree} onChange={(v) => handleEducationChange(index, "degree", v)} />
-                    <FormInput placeholder="Year (e.g. 2020–2024)" value={edu.year} onChange={(v) => handleEducationChange(index, "year", v)} />
+                    <FormInput placeholder="Degree" value={edu.degree} onChange={(v) => handleEduChange(i, "degree", v)} />
+                    <FormInput placeholder="Year (e.g. 2020–2024)" value={edu.year} onChange={(v) => handleEduChange(i, "year", v)} />
                   </div>
                   {education.length > 1 && (
-                    <button onClick={() => removeEducation(index)} className="text-xs text-rose-400/70 hover:text-rose-400 transition-colors">
-                      Remove entry
-                    </button>
+                    <button onClick={() => removeEdu(i)} className="text-xs text-rose-400/70 hover:text-rose-400 transition-colors">Remove entry</button>
                   )}
                 </div>
               ))}
-              <button onClick={addEducation} className="text-xs text-violet-400 hover:text-violet-300 transition-colors font-medium">
-                + Add Education
-              </button>
+              <button onClick={addEdu} className="text-xs text-violet-400 hover:text-violet-300 transition-colors font-medium">+ Add Education</button>
             </div>
 
             <SectionHeader>Projects</SectionHeader>
             <div className="space-y-3 pb-4">
-              {projects.map((project, index) => (
-                <div key={index} className="bg-slate-800/50 border border-slate-700/50 rounded-xl p-3 space-y-2">
-                  <FormInput placeholder="Project Title" value={project.title} onChange={(v) => handleProjectChange(index, "title", v)} />
-                  <FormInput placeholder="Tech Stack (e.g. React, MongoDB)" value={project.tech} onChange={(v) => handleProjectChange(index, "tech", v)} />
-                  <FormTextarea placeholder="What you built and your impact..." value={project.description} onChange={(v) => handleProjectChange(index, "description", v)} rows={2} />
+              {projects.map((proj, i) => (
+                <div key={i} className="bg-slate-800/50 border border-slate-700/50 rounded-xl p-3 space-y-2">
+                  <FormInput placeholder="Project Title" value={proj.title} onChange={(v) => handleProjChange(i, "title", v)} />
+                  <FormInput placeholder="Tech Stack (e.g. React, MongoDB)" value={proj.tech} onChange={(v) => handleProjChange(i, "tech", v)} />
+                  <FormTextarea placeholder="What you built and your impact..." value={proj.description} onChange={(v) => handleProjChange(i, "description", v)} rows={2} />
                   {projects.length > 1 && (
-                    <button onClick={() => removeProject(index)} className="text-xs text-rose-400/70 hover:text-rose-400 transition-colors">
-                      Remove entry
-                    </button>
+                    <button onClick={() => removeProj(i)} className="text-xs text-rose-400/70 hover:text-rose-400 transition-colors">Remove entry</button>
                   )}
                 </div>
               ))}
-              <button onClick={addProject} className="text-xs text-violet-400 hover:text-violet-300 transition-colors font-medium">
-                + Add Project
-              </button>
+              <button onClick={addProj} className="text-xs text-violet-400 hover:text-violet-300 transition-colors font-medium">+ Add Project</button>
             </div>
 
           </div>
         </div>
 
         {/* ── RIGHT: LIVE PREVIEW ── */}
-        <div className="bg-white rounded-2xl overflow-y-auto shadow-xl">
-          <div className="p-8 min-h-full">
+        <div className="rounded-2xl overflow-y-auto shadow-xl flex flex-col" style={{ background: "#e2e8f0" }}>
 
+          {/* Template switcher — OUTSIDE the PDF capture area */}
+          <div className="flex gap-2 p-3 justify-center flex-shrink-0">
+            {(Object.keys(TEMPLATE_META) as TemplateKey[]).map((key) => (
+              <button
+                key={key}
+                onClick={() => setTemplate(key)}
+                className={`px-4 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+                  template === key
+                    ? "bg-violet-600 text-white shadow-md"
+                    : "bg-slate-700 text-slate-300 hover:bg-slate-600"
+                }`}
+              >
+                {TEMPLATE_META[key].label}
+              </button>
+            ))}
+          </div>
+
+          <div className="flex-1 overflow-y-auto p-4">
             {isEmpty ? (
               <div className="flex flex-col items-center justify-center h-full text-center pt-20">
                 <div className="text-5xl mb-4">📄</div>
-                <p className="text-slate-300 text-sm font-medium">Your live preview will appear here</p>
-                <p className="text-slate-400 text-xs mt-1">Start typing on the left to get started</p>
+                <p className="text-slate-400 text-sm font-medium">Your live preview will appear here</p>
+                <p className="text-slate-500 text-xs mt-1">Start typing on the left to get started</p>
               </div>
             ) : (
-              <div style={{ fontFamily: "'Georgia', 'Times New Roman', serif" }}>
-
-                {/* Header */}
-                <div className="border-b-2 border-slate-800 pb-5 mb-6">
-                  <h1 className="text-[28px] font-bold text-slate-900 tracking-tight leading-tight">
-                    {name || <span className="text-slate-300">Your Name</span>}
-                  </h1>
-                  <p className="text-slate-500 text-sm mt-1.5" style={{ fontFamily: "system-ui, sans-serif" }}>
-                    {email || <span className="text-slate-300">your@email.com</span>}
-                  </p>
-                </div>
-
-                {/* Summary */}
-                {summary && (
-                  <section className="mb-6">
-                    <h2 className="text-[9px] font-bold tracking-[0.25em] uppercase text-slate-400 mb-2" style={{ fontFamily: "system-ui, sans-serif" }}>
-                      Summary
-                    </h2>
-                    <p className="text-slate-700 text-sm leading-relaxed">{summary}</p>
-                  </section>
-                )}
-
-                {/* Skills */}
-                {filledSkills.length > 0 && (
-                  <section className="mb-6">
-                    <h2 className="text-[9px] font-bold tracking-[0.25em] uppercase text-slate-400 mb-2.5" style={{ fontFamily: "system-ui, sans-serif" }}>
-                      Skills
-                    </h2>
-                    <div className="flex flex-wrap gap-1.5">
-                      {filledSkills.map((skill, i) => (
-                        <span key={i} className="px-2.5 py-0.5 bg-slate-100 text-slate-700 rounded text-xs border border-slate-200" style={{ fontFamily: "system-ui, sans-serif" }}>
-                          {skill}
-                        </span>
-                      ))}
-                    </div>
-                  </section>
-                )}
-
-                {/* Experience */}
-                {experience.some((e) => e.role || e.company) && (
-                  <section className="mb-6">
-                    <h2 className="text-[9px] font-bold tracking-[0.25em] uppercase text-slate-400 mb-3" style={{ fontFamily: "system-ui, sans-serif" }}>
-                      Experience
-                    </h2>
-                    <div className="space-y-4">
-                      {experience.filter((e) => e.role || e.company).map((exp, i) => (
-                        <div key={i}>
-                          <div className="flex items-baseline gap-1.5">
-                            <span className="font-bold text-slate-900 text-sm">{exp.role || "Role"}</span>
-                            {exp.company && <span className="text-slate-400 text-sm">·</span>}
-                            {exp.company && <span className="text-slate-600 text-sm">{exp.company}</span>}
-                          </div>
-                          {exp.description && (
-                            <p className="text-slate-600 text-[13px] mt-1 leading-relaxed whitespace-pre-line">{exp.description}</p>
-                          )}
-                        </div>
-                      ))}
-                    </div>
-                  </section>
-                )}
-
-                {/* Education */}
-                {education.some((e) => e.college || e.degree) && (
-                  <section className="mb-6">
-                    <h2 className="text-[9px] font-bold tracking-[0.25em] uppercase text-slate-400 mb-3" style={{ fontFamily: "system-ui, sans-serif" }}>
-                      Education
-                    </h2>
-                    <div className="space-y-3">
-                      {education.filter((e) => e.college || e.degree).map((edu, i) => (
-                        <div key={i}>
-                          <div className="font-bold text-slate-900 text-sm">{edu.degree || "Degree"}</div>
-                          <div className="text-slate-500 text-[13px]" style={{ fontFamily: "system-ui, sans-serif" }}>
-                            {edu.college}
-                            {edu.year && <span className="text-slate-400"> · {edu.year}</span>}
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </section>
-                )}
-
-                {/* Projects */}
-                {projects.some((p) => p.title) && (
-                  <section className="mb-6">
-                    <h2 className="text-[9px] font-bold tracking-[0.25em] uppercase text-slate-400 mb-3" style={{ fontFamily: "system-ui, sans-serif" }}>
-                      Projects
-                    </h2>
-                    <div className="space-y-4">
-                      {projects.filter((p) => p.title).map((project, i) => (
-                        <div key={i}>
-                          <div className="flex items-baseline gap-2 flex-wrap">
-                            <span className="font-bold text-slate-900 text-sm">{project.title}</span>
-                            {project.tech && (
-                              <span className="text-violet-600 text-xs font-medium" style={{ fontFamily: "system-ui, sans-serif" }}>
-                                {project.tech}
-                              </span>
-                            )}
-                          </div>
-                          {project.description && (
-                            <p className="text-slate-600 text-[13px] mt-1 leading-relaxed whitespace-pre-line">{project.description}</p>
-                          )}
-                        </div>
-                      ))}
-                    </div>
-                  </section>
-                )}
-
+              <div id="resume-preview">
+                {template === "classic" && <ClassicTemplate {...resumeData} />}
+                {template === "modern"  && <ModernTemplate  {...resumeData} />}
+                {template === "minimal" && <MinimalTemplate {...resumeData} />}
               </div>
             )}
           </div>

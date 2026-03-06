@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+
 interface Resume {
   _id: string;
   name: string;
@@ -34,40 +35,32 @@ export default function DashboardPage() {
   };
 
   const deleteResume = async (id: string) => {
-  const confirmDelete = confirm("Are you sure you want to delete this resume?");
-  if (!confirmDelete) return;
+    const confirmDelete = confirm("Are you sure you want to delete this resume?");
+    if (!confirmDelete) return;
 
-  setDeletingId(id);
-  try {
-    const res = await fetch(`/api/resume/${id}`, {
-      method: "DELETE",
-    });
+    setDeletingId(id);
+    try {
+      const res = await fetch(`/api/resume/${id}`, { method: "DELETE" });
 
-    if (!res.ok) {
-      // safely try to parse error, fall back to status text
-      let errorMessage = `Delete failed (${res.status})`;
-      try {
-        const errorData = await res.json();
-        errorMessage = errorData.error || errorData.message || errorMessage;
-      } catch {
-        // body was empty or not JSON — use the fallback message above
+      if (!res.ok) {
+        let errorMessage = `Delete failed (${res.status})`;
+        try {
+          const errorData = await res.json();
+          errorMessage = errorData.error || errorData.message || errorMessage;
+        } catch { }
+        throw new Error(errorMessage);
       }
-      throw new Error(errorMessage);
-    }
 
-    // Only parse JSON if response was successful
-    await res.json();
-    setResumes((prev) => prev.filter((r) => r._id !== id));
-  } catch (error: any) {
-    console.error("Delete error:", error.message || error);
-    alert(`Delete failed: ${error.message || "Unknown error"}`);
-  } finally {
-    setDeletingId(null);
-  }
-};
-  const viewResume = (id: string) => {
-  router.push(`/resume/${id}`);
-};
+      await res.json();
+      setResumes((prev) => prev.filter((r) => r._id !== id));
+    } catch (error: any) {
+      console.error("Delete error:", error.message || error);
+      alert(`Delete failed: ${error.message || "Unknown error"}`);
+    } finally {
+      setDeletingId(null);
+    }
+  };
+
   return (
     <div>
       <h1 className="text-3xl font-bold mb-6">My Resumes</h1>
@@ -85,15 +78,13 @@ export default function DashboardPage() {
             >
               <h2 className="text-xl font-semibold mb-2">{resume.name}</h2>
               <p className="text-slate-400 text-sm mb-4">{resume.email}</p>
-              <p className="text-slate-300 text-sm line-clamp-3">
-                {resume.summary}
-              </p>
+              <p className="text-slate-300 text-sm line-clamp-3">{resume.summary}</p>
               <div className="mt-4 text-xs text-slate-500">
                 Created: {new Date(resume.createdAt).toLocaleDateString()}
               </div>
               <div className="mt-4 flex gap-3">
                 <button
-                  onClick={() => viewResume(resume._id)}
+                  onClick={() => router.push(`/resume/${resume._id}`)}
                   className="px-3 py-1 bg-indigo-600 rounded-lg text-sm hover:bg-indigo-500"
                 >
                   View
@@ -104,6 +95,12 @@ export default function DashboardPage() {
                   className="px-3 py-1 bg-rose-600 rounded-lg text-sm hover:bg-rose-500 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {deletingId === resume._id ? "Deleting..." : "Delete"}
+                </button>
+                <button
+                  onClick={() => router.push(`/builder?id=${resume._id}`)}
+                  className="px-3 py-1 bg-yellow-600 rounded-lg text-sm hover:bg-yellow-500"
+                >
+                  Edit
                 </button>
               </div>
             </div>

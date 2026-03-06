@@ -31,6 +31,10 @@ const ResumeSchema = new mongoose.Schema(
         tech: String,
       },
     ],
+    template: {
+  type: String,
+  default: "classic"
+}
   },
   { timestamps: true }
 );
