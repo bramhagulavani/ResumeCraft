@@ -1,11 +1,9 @@
 import "./globals.css";
 import { ClerkProvider } from "@clerk/nextjs";
-import Sidebar from "@/components/layout/Sidebar";
-import Topbar from "@/components/layout/Topbar";
 
 export const metadata = {
   title: "ResumeCraft",
-  description: "Premium Resume Builder SaaS",
+  description: "AI-Powered Resume Builder",
 };
 
 export default function RootLayout({
@@ -17,13 +15,7 @@ export default function RootLayout({
     <ClerkProvider>
       <html lang="en">
         <body className="bg-slate-950 text-white">
-          <div className="min-h-screen flex">
-            <Sidebar />
-            <div className="flex-1 flex flex-col">
-              <Topbar />
-              <main className="flex-1 p-8">{children}</main>
-            </div>
-          </div>
+          {children}
         </body>
       </html>
     </ClerkProvider>
