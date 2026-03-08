@@ -1,4 +1,5 @@
 import "./globals.css";
+import { ClerkProvider } from "@clerk/nextjs";
 import Sidebar from "@/components/layout/Sidebar";
 import Topbar from "@/components/layout/Topbar";
 
@@ -13,17 +14,18 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
-      <body className="bg-slate-950 text-white">
-        <div className="min-h-screen flex">
-          <Sidebar />
-
-          <div className="flex-1 flex flex-col">
-            <Topbar />
-            <main className="flex-1 p-8">{children}</main>
+    <ClerkProvider>
+      <html lang="en">
+        <body className="bg-slate-950 text-white">
+          <div className="min-h-screen flex">
+            <Sidebar />
+            <div className="flex-1 flex flex-col">
+              <Topbar />
+              <main className="flex-1 p-8">{children}</main>
+            </div>
           </div>
-        </div>
-      </body>
-    </html>
+        </body>
+      </html>
+    </ClerkProvider>
   );
 }

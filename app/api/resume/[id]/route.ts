@@ -2,116 +2,31 @@ import { NextResponse } from "next/server";
 import { connectToDatabase } from "@/lib/mongodb";
 import Resume from "@/models/Resume";
 import mongoose from "mongoose";
+import { auth } from "@clerk/nextjs/server";
 
-// ── GET — fetch single resume (used by builder to prefill edit form) ──
-export async function GET(
-  request: Request,
-  context: { params: Promise<{ id: string }> }
-) {
-  try {
-    await connectToDatabase();
-
-    const { id } = await context.params;
-
-    if (!mongoose.Types.ObjectId.isValid(id)) {
-      return NextResponse.json(
-        { message: "Invalid resume ID format" },
-        { status: 400 }
-      );
-    }
-
-    const resume = await Resume.findById(id).lean() as any;
-
-    if (!resume) {
-      return NextResponse.json(
-        { message: "Resume not found" },
-        { status: 404 }
-      );
-    }
-
-    return NextResponse.json(
-      { ...resume, _id: resume._id.toString() },
-      { status: 200 }
-    );
-  } catch (error: any) {
-    return NextResponse.json(
-      { message: "Error fetching resume", error: error.message },
-      { status: 500 }
-    );
-  }
-}
-
-// ── PUT — update existing resume ──
-export async function PUT(
-  req: Request,
-  context: { params: Promise<{ id: string }> }
-) {
-  try {
-    await connectToDatabase();
-
-    const { id } = await context.params;
-
-    if (!mongoose.Types.ObjectId.isValid(id)) {
-      return NextResponse.json(
-        { message: "Invalid resume ID format" },
-        { status: 400 }
-      );
-    }
-
-    const body = await req.json();
-
-    const updated = await Resume.findByIdAndUpdate(id, body, { new: true });
-
-    if (!updated) {
-      return NextResponse.json(
-        { message: "Resume not found" },
-        { status: 404 }
-      );
-    }
-
-    return NextResponse.json(
-      { ...updated.toObject(), _id: updated._id.toString() },
-      { status: 200 }
-    );
-  } catch (error: any) {
-    return NextResponse.json(
-      { message: "Error updating resume", error: error.message },
-      { status: 500 }
-    );
-  }
-}
-
-// ── DELETE — remove resume ──
 export async function DELETE(
   request: Request,
-  context: { params: Promise<{ id: string }> }
+  { params }: { params: { id: string } }
 ) {
   try {
+    const { userId } = await auth();
+    if (!userId) {
+      return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+    }
+
     await connectToDatabase();
+    const id = params.id?.trim();
 
-    const { id } = await context.params;
-
-    if (!id) {
-      return NextResponse.json(
-        { message: "Resume ID is required" },
-        { status: 400 }
-      );
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return NextResponse.json({ message: "Invalid ID" }, { status: 400 });
     }
 
-    const trimmedId = id.trim();
+    // Only delete if resume belongs to this user
+    const deleted = await Resume.findOneAndDelete({ _id: id, userId });
 
-    if (!mongoose.Types.ObjectId.isValid(trimmedId)) {
+    if (!deleted) {
       return NextResponse.json(
-        { message: "Invalid resume ID format" },
-        { status: 400 }
-      );
-    }
-
-    const deletedResume = await Resume.findByIdAndDelete(trimmedId);
-
-    if (!deletedResume) {
-      return NextResponse.json(
-        { message: "Resume not found" },
+        { message: "Resume not found or unauthorized" },
         { status: 404 }
       );
     }
@@ -121,8 +36,44 @@ export async function DELETE(
       { status: 200 }
     );
   } catch (error: any) {
+    console.error("DELETE ERROR:", error);
+    return NextResponse.json({ message: "Server error" }, { status: 500 });
+  }
+}
+
+export async function PUT(
+  req: Request,
+  { params }: { params: { id: string } }
+) {
+  try {
+    const { userId } = await auth();
+    if (!userId) {
+      return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+    }
+
+    await connectToDatabase();
+    const body = await req.json();
+    const id = params.id?.trim();
+
+    // Only update if resume belongs to this user
+    const updated = await Resume.findOneAndUpdate(
+      { _id: id, userId },
+      body,
+      { new: true }
+    );
+
+    if (!updated) {
+      return NextResponse.json(
+        { message: "Resume not found or unauthorized" },
+        { status: 404 }
+      );
+    }
+
+    return NextResponse.json(updated);
+  } catch (error: any) {
+    console.error("PUT ERROR:", error);
     return NextResponse.json(
-      { message: "Server error", error: error.message || "Unknown error" },
+      { message: "Error updating resume" },
       { status: 500 }
     );
   }

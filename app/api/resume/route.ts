@@ -1,12 +1,21 @@
 import { NextResponse } from "next/server";
 import { connectToDatabase } from "@/lib/mongodb";
 import Resume from "@/models/Resume";
+import { auth } from "@clerk/nextjs/server";
 
 export async function GET() {
   try {
+    const { userId } = await auth();
+    if (!userId) {
+      return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+    }
+
     await connectToDatabase();
 
-    const resumes = await Resume.find().sort({ createdAt: -1 }).lean();
+    // Only fetch resumes belonging to this user
+    const resumes = await Resume.find({ userId })
+      .sort({ createdAt: -1 })
+      .lean();
 
     const sanitized = resumes.map((r: any) => ({
       ...r,
@@ -25,10 +34,16 @@ export async function GET() {
 
 export async function POST(req: Request) {
   try {
-    await connectToDatabase();
+    const { userId } = await auth();
+    if (!userId) {
+      return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+    }
 
+    await connectToDatabase();
     const body = await req.json();
-    const newResume = await Resume.create(body);
+
+    // Attach userId to the resume before saving
+    const newResume = await Resume.create({ ...body, userId });
 
     const responseData = {
       ...newResume.toObject(),

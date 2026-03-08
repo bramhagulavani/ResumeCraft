@@ -1,43 +1,40 @@
-import mongoose from "mongoose";
+import mongoose, { Schema, models } from "mongoose";
 
-const ResumeSchema = new mongoose.Schema(
+const ExperienceSchema = new Schema({
+  company: String,
+  role: String,
+  description: String,
+});
+
+const EducationSchema = new Schema({
+  college: String,
+  degree: String,
+  year: String,
+});
+
+const ProjectSchema = new Schema({
+  title: String,
+  description: String,
+  tech: String,
+});
+
+const ResumeSchema = new Schema(
   {
-    name: String,
+    userId: {
+      type: String,
+      required: true,  // every resume must belong to a user
+    },
+    name: { type: String, required: true },
     email: String,
     summary: String,
-
     skills: [String],
-
-    education: [
-      {
-        college: String,
-        degree: String,
-        year: String,
-      },
-    ],
-
-    experience: [
-      {
-        company: String,
-        role: String,
-        description: String,
-      },
-    ],
-
-    projects: [
-      {
-        title: String,
-        description: String,
-        tech: String,
-      },
-    ],
-    template: {
-  type: String,
-  default: "classic"
-}
+    experience: [ExperienceSchema],
+    education: [EducationSchema],
+    projects: [ProjectSchema],
+    template: { type: String, default: "classic" },
   },
   { timestamps: true }
 );
 
-export default mongoose.models.Resume ||
-  mongoose.model("Resume", ResumeSchema);
+const Resume = models.Resume || mongoose.model("Resume", ResumeSchema);
+export default Resume;
