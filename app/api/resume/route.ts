@@ -7,8 +7,8 @@ export async function GET() {
   try {
     const { userId } = await auth();
     if (!userId) {
-      return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
-    }
+  return NextResponse.json([], { status: 200 });
+}
 
     await connectToDatabase();
 

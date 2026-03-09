@@ -24,9 +24,9 @@ export default function DashboardPage() {
   const fetchResumes = async () => {
     setLoading(true);
     try {
-      const res = await fetch("/api/resume");
-      const data = await res.json();
-      setResumes(data);
+const res = await fetch("/api/resume");
+const data = await res.json();
+setResumes(Array.isArray(data) ? data : []);
     } catch (error) {
       console.error("Error fetching resumes", error);
     } finally {
