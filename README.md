@@ -1,6 +1,6 @@
 # ResumeCraft
 
-ResumeCraft is a comprehensive Next.js resume builder application with real-time live preview, multiple resume templates, full CRUD operations, and PDF export functionality. It features an intuitive dual-panel builder, persistent MongoDB storage, dashboard management, and professional resume rendering.
+ResumeCraft is a comprehensive Next.js resume builder application with real-time live preview, multiple resume templates, full CRUD operations, PDF export functionality, and user authentication. It features an intuitive dual-panel builder, persistent MongoDB storage, secure dashboard management, and professional resume rendering.
 
 ## ✅ Status — What's Completed
 
@@ -10,15 +10,39 @@ ResumeCraft is a comprehensive Next.js resume builder application with real-time
 - ✅ Tailwind CSS with PostCSS and ESLint configured
 - ✅ Git version control initialized
 
-### 2. **Application Pages**
-- ✅ **Resume Builder** (`app/builder/page.tsx`) — Dual-panel form with live preview
-- ✅ **Dashboard** (`app/dashboard/page.tsx`) — Resume management with View/Edit/Delete
-- ✅ **Resume View Page** (`app/resume/[id]/page.tsx`) — Professional resume display with templates
-- ✅ **Templates Placeholder** (`app/templates/page.tsx`) 
-- ✅ **Layout Components** — Sidebar and Topbar navigation
-- ✅ **Home Page** (`app/page.tsx`)
+### 2. **Authentication System (Clerk)**
+- ✅ **Clerk Integration** — Complete authentication system with @clerk/nextjs
+- ✅ **Sign In Page** (`app/sign-in/[[...sign-in]]/page.tsx`) — User login
+- ✅ **Sign Up Page** (`app/sign-up/[[...sign-up]]/page.tsx`) — User registration
+- ✅ **User Button** — Profile pic + logout in Topbar
+- ✅ **Protected Routes** — Dashboard, Builder, Templates require authentication
+- ✅ **Auth Guards** — API routes verify user identity
+- ✅ **Sign Out** — AfterSignOutUrl to landing page
 
-### 3. **Resume Builder Features** (`app/builder/page.tsx`)
+### 3. **Application Pages**
+
+#### Public Pages
+- ✅ **Landing Page** (`app/page.tsx`) — Full landing page with:
+  - Professional dark-themed design
+  - Navbar with Sign In / Get Started buttons
+  - Hero section with call-to-action
+  - Features showcase (6 features)
+  - CTA section
+  - Footer
+
+#### Protected Pages (require sign-in)
+- ✅ **Dashboard** (`app/(dashboard)/dashboard/page.tsx`) — Resume management with View/Edit/Delete
+- ✅ **Resume Builder** (`app/(dashboard)/builder/page.tsx`) — Dual-panel form with live preview
+- ✅ **Resume View Page** (`app/(dashboard)/resume/[id]/page.tsx`) — Professional resume display
+- ✅ **Templates** (`app/(dashboard)/templates/page.tsx`) — Template showcase
+
+#### Layout Components
+- ✅ **Dashboard Layout** (`app/(dashboard)/layout.tsx`) — Sidebar + Topbar with auth
+- ✅ **Root Layout** (`app/layout.tsx`) — ClerkProvider wrapper
+- ✅ **Sidebar** (`components/layout/Sidebar.tsx`) — Navigation sidebar
+- ✅ **Topbar** (`components/layout/Topbar.tsx`) — Top navigation with UserButton
+
+### 4. **Resume Builder Features** (`app/(dashboard)/builder/page.tsx`)
 Complete resume creation and editing with:
 - ✅ **Dual-panel layout** — Form on left, live preview on right
 - ✅ **Personal Information** — Name, email, professional summary with validation
@@ -33,8 +57,9 @@ Complete resume creation and editing with:
 - ✅ **Loading States** — User feedback while saving or loading data
 - ✅ **Form Validation** — Required field checking (name & email)
 
-### 4. **Dashboard Page** (`app/dashboard/page.tsx`)
+### 5. **Dashboard Page** (`app/(dashboard)/dashboard/page.tsx`)
 Full resume management interface with:
+- ✅ **User-specific Resumes** — Only shows resumes for signed-in user
 - ✅ **Resume Listing** — Display all saved resumes in card grid
 - ✅ **Resume Cards** — Show name, email, summary preview, creation date
 - ✅ **View Button** — Navigate to professional resume display page
@@ -46,9 +71,10 @@ Full resume management interface with:
 - ✅ **Empty State** — Show message when no resumes exist
 - ✅ **Error Handling** — Comprehensive error messages and logging
 
-### 5. **Resume View/Display** (`app/resume/[id]/page.tsx`)
+### 6. **Resume View/Display** (`app/(dashboard)/resume/[id]/page.tsx`)
 Professional resume rendering with:
 - ✅ **Server-Side Rendering** — Fast, SEO-friendly page load
+- ✅ **Authorization Check** — Ensure user owns the resume
 - ✅ **Three Templates**:
   - Classic: Serif font, traditional look, professional colors
   - Modern: Dark mode, tech-forward, vibrant accents
@@ -58,7 +84,7 @@ Professional resume rendering with:
 - ✅ **Template Info Display** — Show which template is in use
 - ✅ **Error Handling** — Invalid ID and not found states
 
-### 6. **Resume Templates** (`components/resumeTemplates/`)
+### 7. **Resume Templates** (`components/resumeTemplates/`)
 - ✅ **ClassicTemplate.tsx** — Traditional serif-based design
 - ✅ **ModernTemplate.tsx** — Dark mode with bold colors
 - ✅ **MinimalTemplate.tsx** — Minimalist clean design
@@ -66,9 +92,10 @@ Professional resume rendering with:
 - ✅ **Styled sections** — Proper formatting for all resume sections
 - ✅ **Responsive styling** — Works on all screen sizes
 
-### 7. **MongoDB Integration**
+### 8. **MongoDB Integration**
 - ✅ **Database Connection** (`lib/mongodb.ts`) — Mongoose with connection pooling
 - ✅ **Resume Schema** (`models/Resume.ts`) — Comprehensive data model with all fields:
+  - **userId** — Clerk user ID for ownership (required)
   - Personal info (name, email, summary)
   - Skills array
   - Education array (college, degree, year)
@@ -78,29 +105,32 @@ Professional resume rendering with:
   - Auto-generated timestamps
   - Full type safety with TypeScript
 
-### 8. **API Routes - Complete CRUD**
+### 9. **API Routes - Complete CRUD with User Authorization**
 
 #### **GET /api/resume**
-- ✅ Fetch all resumes from database
+- ✅ Fetch all resumes for signed-in user
+- ✅ Filter by userId from Clerk
 - ✅ Sort by creation date (newest first)
 - ✅ Proper ObjectId to string conversion
 - ✅ Error handling with 500 status
 
 #### **POST /api/resume**
-- ✅ Create new resume with all fields
-- ✅ Validate required fields
+- ✅ Create new resume with userId from Clerk
+- ✅ Validate required fields (name, email)
 - ✅ Return created document with string ID
 - ✅ Timestamps auto-generated
 - ✅ Comprehensive error messages
 
 #### **GET /api/resume/[id]**
 - ✅ Fetch single resume by ID
+- ✅ Verify user owns the resume
 - ✅ Used to prefill builder for editing
 - ✅ ObjectId validation
-- ✅ Proper error handling (400, 404, 500)
+- ✅ Proper error handling (400, 401, 404, 500)
 
 #### **PUT /api/resume/[id]**
 - ✅ Update existing resume by ID
+- ✅ Verify user owns the resume
 - ✅ Replace all fields with new data
 - ✅ ObjectId validation
 - ✅ Return updated document
@@ -108,8 +138,9 @@ Professional resume rendering with:
 
 #### **DELETE /api/resume/[id]**
 - ✅ Remove resume by ID
+- ✅ Verify user owns the resume
 - ✅ ID validation and trimming
-- ✅ Proper HTTP status codes (200, 400, 404, 500)
+- ✅ Proper HTTP status codes (200, 400, 401, 404, 500)
 - ✅ Comprehensive error messages
 - ✅ Debug logging for troubleshooting
 
@@ -118,43 +149,51 @@ Professional resume rendering with:
 ```
 resumecraft/
 ├── app/
+│   ├── (dashboard)/                  # Protected routes (require authentication)
+│   │   ├── layout.tsx                # Dashboard layout with Sidebar + Topbar
+│   │   ├── builder/
+│   │   │   └── page.tsx               # Resume builder with live preview
+│   │   ├── dashboard/
+│   │   │   └── page.tsx               # Resume management dashboard
+│   │   ├── resume/
+│   │   │   └── [id]/
+│   │   │       ├── page.tsx           # Resume display view
+│   │   │       └── Resumedownloadbutton.tsx
+│   │   └── templates/
+│   │       └── page.tsx               # Templates showcase
 │   ├── api/
 │   │   └── resume/
-│   │       ├── route.ts            # GET all & POST create
+│   │       ├── route.ts               # GET all & POST create
 │   │       └── [id]/
-│   │           └── route.ts        # GET single, PUT update, DELETE
-│   ├── builder/
-│   │   └── page.tsx                # Resume builder with templates
-│   ├── dashboard/
-│   │   └── page.tsx                # Resume management dashboard
-│   ├── resume/
-│   │   └── [id]/
-│   │       ├── page.tsx            # Resume display view
-│   │       └── ResumeDownloadButton.tsx  # PDF download component
-│   ├── templates/
-│   │   └── page.tsx                # Templates placeholder
-│   ├── layout.tsx                  # Root layout
-│   ├── page.tsx                    # Home page
-│   └── globals.css                 # Global styles
+│   │           └── route.ts           # GET single, PUT update, DELETE
+│   ├── sign-in/
+│   │   └── [[...sign-in]]/
+│   │       └── page.tsx               # Clerk sign-in page
+│   ├── sign-up/
+│   │   └── [[...sign-up]]/
+│   │       └── page.tsx               # Clerk sign-up page
+│   ├── layout.tsx                    # Root layout with ClerkProvider
+│   ├── page.tsx                      # Landing page (public)
+│   └── globals.css                    # Global styles
 ├── components/
 │   ├── layout/
-│   │   ├── Sidebar.tsx             # Navigation sidebar
-│   │   └── Topbar.tsx              # Top navigation
+│   │   ├── Sidebar.tsx                # Navigation sidebar
+│   │   └── Topbar.tsx                 # Top navigation with UserButton
 │   └── resumeTemplates/
-│       ├── types.ts                # TypeScript interfaces
-│       ├── ClassicTemplate.tsx     # Classic resume template
-│       ├── ModernTemplate.tsx      # Modern resume template
-│       └── MinimalTemplate.tsx     # Minimal resume template
+│       ├── types.ts                   # TypeScript interfaces
+│       ├── ClassicTemplate.tsx        # Classic resume template
+│       ├── ModernTemplate.tsx         # Modern resume template
+│       └── MinimalTemplate.tsx        # Minimal resume template
 ├── lib/
-│   └── mongodb.ts                  # MongoDB connection utility
+│   └── mongodb.ts                     # MongoDB connection utility
 ├── models/
-│   └── Resume.ts                   # Resume Mongoose schema
-├── public/                         # Static assets
-├── package.json                    # Dependencies
-├── tsconfig.json                   # TypeScript config
-├── next.config.ts                  # Next.js config
-├── eslint.config.mjs               # ESLint config
-└── postcss.config.mjs              # PostCSS config
+│   └── Resume.ts                      # Resume Mongoose schema
+├── public/                            # Static assets
+├── package.json                       # Dependencies
+├── tsconfig.json                      # TypeScript config
+├── next.config.ts                     # Next.js config
+├── eslint.config.mjs                  # ESLint config
+└── postcss.config.mjs                 # PostCSS config
 ```
 
 ## 📦 Dependencies
@@ -163,6 +202,7 @@ resumecraft/
 - `next` 16.1.6 — React framework with App Router
 - `react` 19.2.3 — UI library
 - `react-dom` 19.2.3 — React DOM
+- `@clerk/nextjs` ^7.0.1 — Authentication and user management
 - `mongoose` ^9.2.3 — MongoDB ODM
 - `html2pdf.js` ^0.14.0 — PDF export from HTML
 
@@ -178,6 +218,7 @@ resumecraft/
 ### Prerequisites
 - Node.js 18+ installed
 - MongoDB database (local or MongoDB Atlas)
+- Clerk account (free) for authentication
 
 ### 1. Install Dependencies
 ```bash
@@ -187,9 +228,20 @@ npm install
 ### 2. Environment Configuration
 Create `.env.local` in project root:
 ```env
+# MongoDB Configuration
 MONGODB_URI=mongodb://localhost:27017/resumecraft
 # For MongoDB Atlas:
 # MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/resumecraft?retryWrites=true&w=majority
+
+# Clerk Authentication Keys (get from https://clerk.com)
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_test_your_publishable_key
+CLERK_SECRET_KEY=sk_test_your_secret_key
+
+# Clerk URLs
+NEXT_PUBLIC_CLERK_SIGN_IN_URL=/sign-in
+NEXT_PUBLIC_CLERK_SIGN_UP_URL=/sign-up
+NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL=/dashboard
+NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL=/dashboard
 ```
 
 ### 3. Start Development Server
@@ -197,6 +249,29 @@ MONGODB_URI=mongodb://localhost:27017/resumecraft
 npm run dev
 ```
 Then open [http://localhost:3000](http://localhost:3000) in your browser.
+
+## 🔐 Authentication Flow
+
+### Sign Up
+1. Click "Get Started Free" or "Sign Up" on landing page
+2. Enter email, username, and password (or use OAuth)
+3. Verify email (if required)
+4. Redirected to Dashboard
+
+### Sign In
+1. Click "Sign In" on landing page
+2. Enter email and password (or use OAuth)
+3. Redirected to Dashboard
+
+### Protected Routes
+- All routes under `/dashboard`, `/builder`, `/templates`, `/resume` require authentication
+- Unauthenticated users are redirected to sign-in
+- After sign-in, redirected to `/dashboard`
+
+### User Resume Ownership
+- Every resume is tied to a Clerk userId
+- Users can only view, edit, and delete their own resumes
+- API routes verify user ownership before any operation
 
 ## 📝 Available Scripts
 
@@ -207,19 +282,28 @@ Then open [http://localhost:3000](http://localhost:3000) in your browser.
 
 ## 🔄 How It Works
 
+### User Registration & Authentication
+1. Navigate to `/sign-up`
+2. Create account with Clerk (email/password or OAuth)
+3. Account created automatically
+4. Redirected to `/dashboard`
+5. User can now create resumes tied to their account
+
 ### Resume Creation Flow
-1. Navigate to `/app/builder`
-2. Fill in personal info (name, email, summary)
-3. Add skills, experience, education, and projects
-4. Select a template (classic, modern, or minimal)
-5. View live preview on the right panel
-6. Click "Download PDF" to export as PDF (optional)
-7. Click "Save Resume" to persist to MongoDB
-8. Form resets after successful save
+1. Navigate to `/dashboard` (sign in if not already)
+2. Click "+ New Resume" or go to `/builder`
+3. Fill in personal info (name, email, summary)
+4. Add skills, experience, education, and projects
+5. Select a template (classic, modern, or minimal)
+6. View live preview on the right panel
+7. Click "Download PDF" to export as PDF (optional)
+8. Click "Save Resume" to persist to MongoDB
+9. Resume is saved with your userId
+10. Form resets after successful save
 
 ### Resume Management Flow
-1. Navigate to `/app/dashboard`
-2. View all saved resumes in card grid
+1. Navigate to `/dashboard`
+2. View all YOUR saved resumes in card grid (not others' resumes)
 3. Click **View** to see professional formatted resume
 4. Click **Edit** to modify resume data in builder
 5. Click **Delete** to remove resume (with confirmation)
@@ -227,11 +311,12 @@ Then open [http://localhost:3000](http://localhost:3000) in your browser.
 
 ### Resume Viewing Flow
 1. Dashboard or builder links to `/resume/{id}`
-2. Server-side renders the resume using selected template
-3. Shows professional formatting with all sections
-4. Displays template information and edit link
-5. Can download as PDF from this view
-6. Can navigate back to edit via "Edit Resume" button
+2. Server verifies you own this resume
+3. Server-side renders the resume using selected template
+4. Shows professional formatting with all sections
+5. Displays template information and edit link
+6. Can download as PDF from this view
+7. Can navigate back to edit via "Edit Resume" button
 
 ### Edit Resume Flow
 1. Dashboard: click "Edit" button, or
@@ -271,7 +356,8 @@ Then open [http://localhost:3000](http://localhost:3000) in your browser.
 ```typescript
 {
   _id: ObjectId,
-  name: string,
+  userId: string,              // Clerk user ID (required)
+  name: string,                // Required
   email: string,
   summary: string,
   skills: string[],
@@ -302,68 +388,91 @@ Then open [http://localhost:3000](http://localhost:3000) in your browser.
 }
 ```
 
-## 🔧 Recent Changes & Improvements (March 6, 2026)
+## 🏠 Landing Page Features
 
-### Major Features Added
-1. **Resume View Page** — Server-side rendered individual resume display
-2. **Multiple Templates** — Three professional template designs
-3. **Full CRUD Operations** — Complete Create, Read, Update, Delete
-4. **PDF Export** — Download resumes as PDF files
-5. **Edit Mode** — Ability to load and modify existing resumes
-6. **Extended Fields** — Skills, education, projects added to schema
-7. **Template Selection** — Users can choose template style
+The landing page (`app/page.tsx`) includes:
 
-### Dashboard Improvements
-- Added Edit button for quick access to builder
-- Better delete state management with loading indicator
-- Optimistic UI updates when deleting
-- Improved button styling and spacing
-- Better error handling and user feedback
+- **Professional Dark Theme** — Sleek slate-950 background
+- **Navigation Bar** — Logo, Sign In, Get Started buttons
+- **Hero Section** — 
+  - "AI-Powered Resume Builder" badge
+  - Compelling headline
+  - Subtitle text
+  - Call-to-action buttons
+- **Features Section** — 6 feature cards:
+  1. Live Resume Builder
+  2. Premium Templates
+  3. One-Click PDF Export
+  4. AI Resume Generator
+  5. Secure & Private
+  6. Fast & Modern
+- **CTA Section** — "Ready to Build Your Resume?"
+- **Footer** — Copyright and "Built with Next.js + MongoDB + AI"
 
-### Builder Enhancements
-- Query parameter support for edit mode (`?id={resumeId}`)
-- Auto-load existing resume data
-- Multiple section management (skills, education, projects)
-- Template preview integration
-- PDF download button functionality
-- Conditional save button text based on mode
+## 🔧 Recent Changes & Improvements
 
-### API Improvements
-- Added GET endpoint for single resume fetch
-- Added PUT endpoint for updates
-- DELETE improved with better error handling
-- All endpoints use async params (Next.js pattern)
-- Consistent response serialization
+### Latest Update: Authentication & User Ownership (March 2026)
 
-### Database Schema Updates
-- New fields: skills, education, projects
-- Template preference field with default
-- All with proper TypeScript types
-- Maintains backward compatibility
+#### Authentication System
+- ✅ Added **Clerk** (@clerk/nextjs) for user authentication
+- ✅ Sign-in and sign-up pages with Clerk components
+- ✅ UserButton in Topbar with profile pic and logout
+- ✅ Protected routes redirect to sign-in
+- ✅ Auth state persists across sessions
 
-### Code Quality
-- Proper TypeScript interfaces for resume data
-- Component composition with reusable parts
-- Consistent error handling across API
-- Loading states throughout the application
-- Comprehensive console logging for debugging
+#### User-Resume Association
+- ✅ Added **userId** field to Resume schema
+- ✅ All API routes verify user ownership
+- ✅ Dashboard only shows user's own resumes
+- ✅ View/Edit/Delete only works for owner
+- ✅ Unauthorized access returns 401/404
+
+#### Landing Page
+- ✅ Complete redesign with dark theme
+- ✅ Professional navbar with auth buttons
+- ✅ Hero section with CTA
+- ✅ Features showcase grid
+- ✅ Footer with credits
+
+#### Directory Cleanup
+- ✅ Dashboard routes moved to `(dashboard)` route group
+- ✅ Protected routes organized under one layout
+- ✅ Auth pages (sign-in, sign-up) at root
+- ✅ Clean separation of public/protected areas
+
+### Previous Features (Still Active)
+- Resume builder with live preview
+- Three professional templates
+- Full CRUD operations
+- PDF export functionality
+- MongoDB persistence
+- TypeScript type safety
 
 ## 🧪 Testing the Application
 
+### Test Authentication
+1. Go to landing page `/`
+2. Click "Get Started Free"
+3. Sign up with email or OAuth
+4. Verify redirected to `/dashboard`
+5. Check UserButton shows in Topbar
+
 ### Test Resume Creation
-1. Go to `/builder`
-2. Fill all sections with data
-3. Select a template
-4. Click "Download PDF" to test export
-5. Click "Save Resume" to create
-6. Verify success alert
-7. Check MongoDB to confirm
+1. Go to `/dashboard`
+2. Click "+ New Resume"
+3. Fill all sections with data
+4. Select a template
+5. Click "Download PDF" to test export
+6. Click "Save Resume" to create
+7. Verify success alert
+8. Check MongoDB to confirm userId is set
 
 ### Test Resume Listing
 1. Go to `/dashboard`
 2. Verify all created resumes appear
-3. Check dates are correct
-4. See all buttons (View, Edit, Delete)
+3. Verify they only show YOUR resumes
+4. Check dates are correct
+5. See all buttons (View, Edit, Delete)
 
 ### Test View Functionality
 1. From dashboard, click "View" button
@@ -385,7 +494,6 @@ Then open [http://localhost:3000](http://localhost:3000) in your browser.
 2. Confirm deletion in dialog
 3. Verify resume removed from list
 4. Check MongoDB to confirm deletion
-5. Try invalid scenarios
 
 ### Test PDF Export
 1. Go to builder with data
@@ -394,14 +502,16 @@ Then open [http://localhost:3000](http://localhost:3000) in your browser.
 4. Open PDF and check formatting
 5. Try from resume view page
 
+### Test Security
+1. Create resume with User A
+2. Sign out, create account with User B
+3. Try to access User A's resume via URL
+4. Should get "Unauthorized" or "Not Found"
+5. Verify User B's dashboard is empty
+
 ## 🛠️ Next Steps (Suggested)
 
-- [ ] Add **user authentication** system
-  - User accounts and login
-  - Privacy for resumes
-  - Sharing capabilities
-
-- [ ] Implement **template customization**
+- [ ] Add **template customization**
   - Color theme selector
   - Font size adjustment
   - Spacing preferences
@@ -457,6 +567,7 @@ Then open [http://localhost:3000](http://localhost:3000) in your browser.
 - **Next.js 16** — Full-stack React framework with App Router
 - **TypeScript** — Type-safe development environment
 - **Tailwind CSS** — Utility-first styling framework
+- **Clerk** — Authentication and user management
 - **MongoDB** — NoSQL database for data persistence
 - **Mongoose** — ODM with schema validation
 - **html2pdf.js** — Client-side PDF generation
@@ -464,10 +575,17 @@ Then open [http://localhost:3000](http://localhost:3000) in your browser.
 
 ## 🐛 Troubleshooting
 
+### Authentication Issues
+- Check Clerk keys in `.env.local`
+- Verify NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY starts with `pk_test_`
+- Verify CLERK_SECRET_KEY starts with `sk_test_`
+- Check Clerk dashboard for errors
+
 ### Edit Mode Not Loading Data
 - Check browser console for errors
 - Verify resume ID in URL: `/builder?id={resumeId}`
 - Ensure resume exists in MongoDB
+- Verify you're the owner of the resume
 
 ### Template Not Displaying Correctly
 - Verify template name matches: "classic", "modern", or "minimal"
@@ -485,6 +603,7 @@ Then open [http://localhost:3000](http://localhost:3000) in your browser.
 - Verify MongoDB connection in env file
 - Look for errors in terminal running `npm run dev`
 - Check browser console for network errors
+- Ensure you're signed in
 
 ### Delete Returns Error
 - Verify MongoDB is running
@@ -493,15 +612,23 @@ Then open [http://localhost:3000](http://localhost:3000) in your browser.
 - Check server terminal for detailed error logs
 
 ### Resumes Not Appearing on Dashboard
-- Ensure MongoDB connection is working
+- Ensure you're signed in
+- Verify MongoDB connection is working
 - Check browser console for fetch errors
 - Verify resumes were actually created
 - Try refreshing the page
+
+### Unauthorized Errors
+- Sign in to your account
+- Check Clerk session is valid
+- Verify userId is set in MongoDB documents
+- Try signing out and signing back in
 
 ## 📞 Support & Debugging
 
 For issues, check:
 - **Browser Console** (F12) — Client-side errors and logs
+- **Clerk Dashboard** — Auth status and configuration
 - **Terminal** (npm run dev output) — Server-side errors
 - **Network Tab** (F12) — API requests and responses
 - **MongoDB** — Database content and collections
@@ -513,4 +640,5 @@ For issues, check:
 3. Use MongoDB Compass to inspect data
 4. Test API endpoints directly with curl/Postman
 5. Add `console.log()` statements to track execution
+6. Check Clerk session at `/api/auth/current-user`
 
