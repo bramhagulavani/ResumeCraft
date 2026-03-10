@@ -195,7 +195,7 @@ export default function BuilderPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ description: aiDescription }),
       });
-      console.log(res)
+
       const data = await res.json();
 
       if (data.summary) setSummary(data.summary);

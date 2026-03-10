@@ -10,52 +10,51 @@ export async function POST(req: Request) {
 
     const { description } = await req.json();
 
+    const apiKey = process.env.OPENROUTER_API_KEY;
+    console.log("API KEY EXISTS:", !!apiKey);
+    console.log("API KEY PREFIX:", apiKey?.substring(0, 15));
+
+    if (!apiKey) {
+      return NextResponse.json({ message: "AI service not configured" }, { status: 500 });
+    }
+
     const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
       method: "POST",
       headers: {
-        "Authorization": `Bearer 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`,
+        "Authorization": `Bearer ${apiKey}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: "qwen/qwen3-vl-30b-a3b-thinking",
+        model: "meta-llama/llama-3.2-3b-instruct:free",
         messages: [
           {
             role: "system",
-            content: `You are a professional resume writer. Given a user's description, generate resume content in JSON format only. No explanation, no markdown, just raw JSON.
-Return exactly this structure:
+            content: `You are a professional resume writer. Return only raw JSON with this structure:
 {
   "summary": "2-3 sentence professional summary",
   "skills": ["skill1", "skill2", "skill3", "skill4", "skill5"],
-  "experience": [
-    {
-      "company": "Company Name",
-      "role": "Job Title",
-      "description": "What you did there in 1-2 sentences"
-    }
-  ]
+  "experience": [{"company": "Company Name", "role": "Job Title", "description": "What you did"}]
 }`,
           },
-          {
-            role: "user",
-            content: description,
-          },
+          { role: "user", content: description },
         ],
       }),
     });
-    console.log(response);
-    const data = await response.json();
-    const content = data.choices?.[0]?.message?.content;
 
+    console.log("OPENROUTER STATUS:", response.status);
+    const data = await response.json();
+    console.log("OPENROUTER RESPONSE:", JSON.stringify(data).substring(0, 200));
+
+    const content = data.choices?.[0]?.message?.content;
     if (!content) {
       return NextResponse.json({ message: "AI returned empty response" }, { status: 500 });
     }
 
-    // Clean and parse JSON
     const cleaned = content.replace(/```json|```/g, "").trim();
     const parsed = JSON.parse(cleaned);
-
     return NextResponse.json(parsed, { status: 200 });
-  } catch (error: any) {
+
+  } catch (error: unknown) {
     console.error("AI ERROR:", error);
     return NextResponse.json({ message: "AI generation failed" }, { status: 500 });
   }
