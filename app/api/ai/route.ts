@@ -13,11 +13,11 @@ export async function POST(req: Request) {
     const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
       method: "POST",
       headers: {
-        "Authorization": `Bearer ${process.env.OPENROUTER_API_KEY}`,
+        "Authorization": `Bearer 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`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: "mistralai/mistral-7b-instruct:free",
+        model: "qwen/qwen3-vl-30b-a3b-thinking",
         messages: [
           {
             role: "system",
@@ -42,7 +42,7 @@ Return exactly this structure:
         ],
       }),
     });
-
+    console.log(response);
     const data = await response.json();
     const content = data.choices?.[0]?.message?.content;
 
