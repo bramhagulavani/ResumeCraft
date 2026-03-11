@@ -31,8 +31,7 @@ export async function GET(
       ...resume,
       _id: (resume._id as any).toString(),
     });
-  } catch (error: any) {
-    console.error("GET BY ID ERROR:", error);
+  } catch {
     return NextResponse.json({ message: "Server error" }, { status: 500 });
   }
 }
@@ -54,7 +53,6 @@ export async function DELETE(
       return NextResponse.json({ message: "Invalid ID" }, { status: 400 });
     }
 
-    // Only delete if resume belongs to this user
     const deleted = await Resume.findOneAndDelete({ _id: id, userId });
 
     if (!deleted) {
@@ -68,8 +66,7 @@ export async function DELETE(
       { message: "Resume deleted successfully" },
       { status: 200 }
     );
-  } catch (error: any) {
-    console.error("DELETE ERROR:", error);
+  } catch {
     return NextResponse.json({ message: "Server error" }, { status: 500 });
   }
 }
@@ -88,7 +85,6 @@ export async function PUT(
     const body = await req.json();
     const id = params.id?.trim();
 
-    // Only update if resume belongs to this user
     const updated = await Resume.findOneAndUpdate(
       { _id: id, userId },
       body,
@@ -103,8 +99,7 @@ export async function PUT(
     }
 
     return NextResponse.json(updated);
-  } catch (error: any) {
-    console.error("PUT ERROR:", error);
+  } catch {
     return NextResponse.json(
       { message: "Error updating resume" },
       { status: 500 }

@@ -7,12 +7,11 @@ export async function GET() {
   try {
     const { userId } = await auth();
     if (!userId) {
-  return NextResponse.json([], { status: 200 });
-}
+      return NextResponse.json([], { status: 200 });
+    }
 
     await connectToDatabase();
 
-    // Only fetch resumes belonging to this user
     const resumes = await Resume.find({ userId })
       .sort({ createdAt: -1 })
       .lean();
@@ -23,12 +22,9 @@ export async function GET() {
     }));
 
     return NextResponse.json(sanitized, { status: 200 });
-  } catch (error: any) {
-    console.error("GET ERROR:", error);
-    return NextResponse.json(
-      { message: "Error fetching resumes" },
-      { status: 500 }
-    );
+  } catch {
+    // ✅ Fixed: return empty array on error, not an object
+    return NextResponse.json([], { status: 200 });
   }
 }
 
@@ -42,7 +38,6 @@ export async function POST(req: Request) {
     await connectToDatabase();
     const body = await req.json();
 
-    // Attach userId to the resume before saving
     const newResume = await Resume.create({ ...body, userId });
 
     const responseData = {
@@ -55,7 +50,6 @@ export async function POST(req: Request) {
       { status: 201 }
     );
   } catch (error: any) {
-    console.error("API ERROR:", error);
     return NextResponse.json(
       { message: "Error saving resume", error: error.message },
       { status: 500 }

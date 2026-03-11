@@ -70,6 +70,7 @@ export default function BuilderPage() {
   const [aiModalOpen, setAiModalOpen] = useState(false);
   const [aiDescription, setAiDescription] = useState("");
   const [aiLoading, setAiLoading] = useState(false);
+  const [aiError, setAiError] = useState("");
 
   // ── Form States ──
   const [template, setTemplate] = useState<TemplateKey>("classic");
@@ -121,7 +122,7 @@ export default function BuilderPage() {
             : [{ title: "", description: "", tech: "" }]
         );
         setTemplate(data.template || "classic");
-      } catch (error) {
+      } catch {
         alert("Failed to load resume for editing.");
       } finally {
         setLoadingResume(false);
@@ -189,6 +190,7 @@ export default function BuilderPage() {
   const handleAiGenerate = async () => {
     if (!aiDescription.trim()) return;
     setAiLoading(true);
+    setAiError("");
     try {
       const res = await fetch("/api/ai", {
         method: "POST",
@@ -196,17 +198,22 @@ export default function BuilderPage() {
         body: JSON.stringify({ description: aiDescription }),
       });
 
+      // ✅ Fixed: check response status before parsing
+      if (!res.ok) {
+        const err = await res.json();
+        throw new Error(err.message || "AI generation failed");
+      }
+
       const data = await res.json();
 
       if (data.summary) setSummary(data.summary);
-      // ✅ Fixed: keep skills as array, not joined string
       if (data.skills) setSkills(data.skills);
       if (data.experience) setExperience(data.experience);
 
       setAiModalOpen(false);
       setAiDescription("");
-    } catch (err) {
-      alert("AI generation failed. Please try again.");
+    } catch (err: any) {
+      setAiError(err.message || "AI generation failed. Please try again.");
     } finally {
       setAiLoading(false);
     }
@@ -240,7 +247,7 @@ export default function BuilderPage() {
       });
 
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error || data.message || "Error saving resume");
+      if (!res.ok) throw new Error(data.message || "Error saving resume");
 
       alert(resumeId ? "Resume updated successfully!" : "Resume saved successfully!");
 
@@ -335,9 +342,9 @@ export default function BuilderPage() {
         <div className="bg-slate-900 rounded-2xl border border-slate-800 overflow-y-auto">
           <div className="p-5 space-y-1">
 
-            {/* ✅ AI Button is here — top of the FORM panel (left side) */}
+            {/* AI Generate Button */}
             <button
-              onClick={() => setAiModalOpen(true)}
+              onClick={() => { setAiError(""); setAiModalOpen(true); }}
               className="w-full py-3 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white rounded-xl font-semibold text-sm transition mb-2 flex items-center justify-center gap-2"
             >
               🤖 Generate with AI
@@ -427,7 +434,7 @@ export default function BuilderPage() {
                   />
                   <div className="grid grid-cols-2 gap-2">
                     <FormInput placeholder="Degree" value={edu.degree} onChange={(v) => handleEduChange(i, "degree", v)} />
-                    <FormInput placeholder="Year (e.g. 2020–2024)" value={edu.year} onChange={(v) => handleEduChange(i, "year", v)} />
+                    <FormInput placeholder="Year (e.g. 2020-2024)" value={edu.year} onChange={(v) => handleEduChange(i, "year", v)} />
                   </div>
                   {education.length > 1 && (
                     <button
@@ -487,7 +494,7 @@ export default function BuilderPage() {
         {/* ── RIGHT: LIVE PREVIEW ── */}
         <div className="rounded-2xl overflow-y-auto shadow-xl flex flex-col" style={{ background: "#e2e8f0" }}>
 
-          {/* Template Switcher — outside PDF capture area */}
+          {/* Template Switcher */}
           <div className="flex gap-2 p-3 justify-center flex-shrink-0">
             {(Object.keys(TEMPLATE_META) as TemplateKey[]).map((key) => (
               <button
@@ -539,10 +546,15 @@ export default function BuilderPage() {
 
             <textarea
               className="w-full bg-slate-800 border border-slate-700 rounded-xl p-4 text-sm text-white placeholder-slate-500 resize-none h-36 focus:outline-none focus:border-indigo-500"
-              placeholder="e.g. I'm a computer science student skilled in React, Node.js and MongoDB. I interned at a startup where I built REST APIs and a dashboard. I also built a resume builder as a personal project."
+              placeholder="e.g. I'm a CS student skilled in React, Node.js and MongoDB. I built a resume builder SaaS as my portfolio project."
               value={aiDescription}
               onChange={(e) => setAiDescription(e.target.value)}
             />
+
+            {/* ✅ Show error inside modal instead of alert */}
+            {aiError && (
+              <p className="text-rose-400 text-xs mt-2">{aiError}</p>
+            )}
 
             <div className="flex gap-3 mt-4">
               <button
@@ -553,7 +565,7 @@ export default function BuilderPage() {
                 {aiLoading ? "✨ Generating..." : "✨ Generate Resume"}
               </button>
               <button
-                onClick={() => { setAiModalOpen(false); setAiDescription(""); }}
+                onClick={() => { setAiModalOpen(false); setAiDescription(""); setAiError(""); }}
                 className="px-6 py-3 bg-slate-800 hover:bg-slate-700 text-white rounded-xl text-sm transition"
               >
                 Cancel

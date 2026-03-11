@@ -24,11 +24,12 @@ export default function DashboardPage() {
   const fetchResumes = async () => {
     setLoading(true);
     try {
-const res = await fetch("/api/resume");
-const data = await res.json();
-setResumes(Array.isArray(data) ? data : []);
-    } catch (error) {
-      console.error("Error fetching resumes", error);
+      const res = await fetch("/api/resume");
+      const data = await res.json();
+      // ✅ Always ensure we set an array
+      setResumes(Array.isArray(data) ? data : []);
+    } catch {
+      setResumes([]);
     } finally {
       setLoading(false);
     }
@@ -46,15 +47,13 @@ setResumes(Array.isArray(data) ? data : []);
         let errorMessage = `Delete failed (${res.status})`;
         try {
           const errorData = await res.json();
-          errorMessage = errorData.error || errorData.message || errorMessage;
+          errorMessage = errorData.message || errorMessage;
         } catch { }
         throw new Error(errorMessage);
       }
 
-      await res.json();
       setResumes((prev) => prev.filter((r) => r._id !== id));
     } catch (error: any) {
-      console.error("Delete error:", error.message || error);
       alert(`Delete failed: ${error.message || "Unknown error"}`);
     } finally {
       setDeletingId(null);
@@ -68,39 +67,53 @@ setResumes(Array.isArray(data) ? data : []);
       {loading ? (
         <p className="text-slate-400">Loading resumes...</p>
       ) : resumes.length === 0 ? (
-        <p className="text-slate-400">No resumes created yet.</p>
+        <div className="flex flex-col items-center justify-center mt-24 text-center">
+          <div className="text-6xl mb-4">📄</div>
+          <p className="text-slate-400 text-lg font-medium">No resumes created yet.</p>
+          <p className="text-slate-500 text-sm mt-1 mb-6">
+            Create your first resume and it will appear here.
+          </p>
+          <button
+            onClick={() => router.push("/builder")}
+            className="px-6 py-3 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-sm font-semibold transition"
+          >
+            + Create Resume
+          </button>
+        </div>
       ) : (
-        <div className="grid grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {resumes.map((resume) => (
             <div
               key={resume._id}
-              className="bg-slate-900 p-6 rounded-2xl border border-slate-800"
+              className="bg-slate-900 p-6 rounded-2xl border border-slate-800 hover:border-slate-700 transition"
             >
-              <h2 className="text-xl font-semibold mb-2">{resume.name}</h2>
-              <p className="text-slate-400 text-sm mb-4">{resume.email}</p>
-              <p className="text-slate-300 text-sm line-clamp-3">{resume.summary}</p>
+              <h2 className="text-xl font-semibold mb-1">{resume.name}</h2>
+              <p className="text-slate-400 text-sm mb-3">{resume.email}</p>
+              <p className="text-slate-300 text-sm line-clamp-3 leading-relaxed">
+                {resume.summary || "No summary added."}
+              </p>
               <div className="mt-4 text-xs text-slate-500">
                 Created: {new Date(resume.createdAt).toLocaleDateString()}
               </div>
-              <div className="mt-4 flex gap-3">
+              <div className="mt-4 flex gap-2">
                 <button
                   onClick={() => router.push(`/resume/${resume._id}`)}
-                  className="px-3 py-1 bg-indigo-600 rounded-lg text-sm hover:bg-indigo-500"
+                  className="px-3 py-1.5 bg-indigo-600 rounded-lg text-sm hover:bg-indigo-500 transition"
                 >
                   View
                 </button>
                 <button
-                  onClick={() => deleteResume(resume._id)}
-                  disabled={deletingId === resume._id}
-                  className="px-3 py-1 bg-rose-600 rounded-lg text-sm hover:bg-rose-500 disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  {deletingId === resume._id ? "Deleting..." : "Delete"}
-                </button>
-                <button
                   onClick={() => router.push(`/builder?id=${resume._id}`)}
-                  className="px-3 py-1 bg-yellow-600 rounded-lg text-sm hover:bg-yellow-500"
+                  className="px-3 py-1.5 bg-yellow-600 rounded-lg text-sm hover:bg-yellow-500 transition"
                 >
                   Edit
+                </button>
+                <button
+                  onClick={() => deleteResume(resume._id)}
+                  disabled={deletingId === resume._id}
+                  className="px-3 py-1.5 bg-rose-600 rounded-lg text-sm hover:bg-rose-500 disabled:opacity-50 disabled:cursor-not-allowed transition"
+                >
+                  {deletingId === resume._id ? "Deleting..." : "Delete"}
                 </button>
               </div>
             </div>
