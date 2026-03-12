@@ -49,10 +49,11 @@ export async function POST(req: Request) {
       { message: "Resume saved successfully", data: responseData },
       { status: 201 }
     );
-  } catch (error: any) {
-    return NextResponse.json(
-      { message: "Error saving resume", error: error.message },
-      { status: 500 }
-    );
+  }  catch (error: any) {
+  console.error("POST ERROR DETAILS:", error.message);
+  return NextResponse.json(
+    { message: "Error saving resume", error: error.message },
+    { status: 500 }
+  );
   }
 }
