@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import ClassicTemplate from "@/components/resumeTemplates/ClassicTemplate";
 import ModernTemplate from "@/components/resumeTemplates/ModernTemplate";
@@ -61,7 +61,8 @@ const FormTextarea = ({
   />
 );
 
-export default function BuilderPage() {
+// ── Inner component that uses useSearchParams ──
+function BuilderPageInner() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const resumeId = searchParams.get("id");
@@ -198,7 +199,6 @@ export default function BuilderPage() {
         body: JSON.stringify({ description: aiDescription }),
       });
 
-      // ✅ Fixed: check response status before parsing
       if (!res.ok) {
         const err = await res.json();
         throw new Error(err.message || "AI generation failed");
@@ -212,8 +212,8 @@ export default function BuilderPage() {
 
       setAiModalOpen(false);
       setAiDescription("");
-    } catch (err: any) {
-      setAiError(err.message || "AI generation failed. Please try again.");
+    } catch (err: unknown) {
+      setAiError(err instanceof Error ? err.message : "AI generation failed. Please try again.");
     } finally {
       setAiLoading(false);
     }
@@ -259,8 +259,8 @@ export default function BuilderPage() {
         setEducation([{ college: "", degree: "", year: "" }]);
         setProjects([{ title: "", description: "", tech: "" }]);
       }
-    } catch (error: any) {
-      alert(`Error saving resume: ${error.message || "Unknown error"}`);
+    } catch (error: unknown) {
+      alert(`Error saving resume: ${error instanceof Error ? error.message : "Unknown error"}`);
     } finally {
       setSaving(false);
     }
@@ -281,8 +281,8 @@ export default function BuilderPage() {
         jsPDF: { unit: "in", format: "letter", orientation: "portrait" },
       };
       await html2pdf().set(opt).from(element).save();
-    } catch (error: any) {
-      alert(`PDF download failed: ${error.message || "Unknown error"}`);
+    } catch (error: unknown) {
+      alert(`PDF download failed: ${error instanceof Error ? error.message : "Unknown error"}`);
     } finally {
       setDownloading(false);
     }
@@ -551,7 +551,6 @@ export default function BuilderPage() {
               onChange={(e) => setAiDescription(e.target.value)}
             />
 
-            {/* ✅ Show error inside modal instead of alert */}
             {aiError && (
               <p className="text-rose-400 text-xs mt-2">{aiError}</p>
             )}
@@ -576,5 +575,14 @@ export default function BuilderPage() {
       )}
 
     </div>
+  );
+}
+
+// ── Default export wraps inner component in Suspense ──
+export default function BuilderPage() {
+  return (
+    <Suspense fallback={<div className="text-slate-400 p-8">Loading...</div>}>
+      <BuilderPageInner />
+    </Suspense>
   );
 }
