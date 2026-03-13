@@ -1,98 +1,138 @@
 import { ResumeData } from "./types";
 
 export default function ModernTemplate({ name, email, summary, skills, experience, education, projects }: ResumeData) {
+  const hasExperience = experience.some((e) => e.role || e.company);
+  const hasEducation = education.some((e) => e.college || e.degree);
+  const hasProjects = projects.some((p) => p.title);
+
   return (
-    <div style={{ display: "flex", background: "#0f172a", color: "#f1f5f9", fontFamily: "system-ui, sans-serif", minHeight: "100%" }}>
+    <div className="flex bg-white max-w-[800px] mx-auto min-h-[500px]" style={{ fontFamily: "system-ui, -apple-system, sans-serif" }}>
 
-      {/* ── LEFT SIDEBAR ── */}
-      <div style={{ width: "200px", flexShrink: 0, background: "#1e293b", padding: "32px 20px", display: "flex", flexDirection: "column", gap: "28px" }}>
+      {/* ═══ LEFT SIDEBAR ═══ */}
+      <div className="w-[220px] flex-shrink-0 bg-slate-800 text-white p-6 flex flex-col gap-6">
 
-        {/* Name / Email */}
+        {/* Name & Email */}
         <div>
-          <h1 style={{ fontSize: "18px", fontWeight: "bold", color: "#f1f5f9", lineHeight: 1.3, margin: 0 }}>
+          <h1 className="text-lg font-bold text-white leading-tight tracking-tight">
             {name || "Your Name"}
           </h1>
-          <p style={{ color: "#6366f1", fontSize: "11px", marginTop: "6px", wordBreak: "break-all" }}>{email}</p>
+          {email && (
+            <p className="text-indigo-300 text-[11px] mt-2 break-all leading-relaxed">
+              {email}
+            </p>
+          )}
         </div>
+
+        {/* Sidebar Divider */}
+        <div className="w-8 h-px bg-slate-600" />
 
         {/* Skills */}
         {skills.length > 0 && (
           <div>
-            <h2 style={{ fontSize: "8px", fontWeight: "bold", letterSpacing: "0.2em", textTransform: "uppercase", color: "#6366f1", marginBottom: "10px" }}>
+            <h2 className="text-[9px] font-bold tracking-[0.2em] uppercase text-indigo-400 mb-3">
               Skills
             </h2>
-            <div style={{ display: "flex", flexDirection: "column", gap: "5px" }}>
+            <div className="flex flex-col gap-1.5">
               {skills.map((skill, i) => (
-                <span key={i} style={{ fontSize: "11px", color: "#cbd5e1", padding: "3px 8px", background: "#0f172a", borderRadius: "3px", border: "1px solid #334155" }}>
-                  {skill}
-                </span>
+                <div key={i} className="flex items-center gap-2">
+                  <div className="w-1 h-1 rounded-full bg-indigo-400 flex-shrink-0" />
+                  <span className="text-[11px] text-slate-300 leading-tight">{skill}</span>
+                </div>
               ))}
             </div>
           </div>
         )}
 
         {/* Education */}
-        {education.some((e) => e.college || e.degree) && (
+        {hasEducation && (
           <div>
-            <h2 style={{ fontSize: "8px", fontWeight: "bold", letterSpacing: "0.2em", textTransform: "uppercase", color: "#6366f1", marginBottom: "10px" }}>
+            <h2 className="text-[9px] font-bold tracking-[0.2em] uppercase text-indigo-400 mb-3">
               Education
             </h2>
-            {education.filter((e) => e.college || e.degree).map((edu, i) => (
-              <div key={i} style={{ marginBottom: "12px" }}>
-                <div style={{ fontWeight: "600", color: "#f1f5f9", fontSize: "11px" }}>{edu.degree}</div>
-                <div style={{ color: "#94a3b8", fontSize: "10px", marginTop: "2px" }}>{edu.college}</div>
-                {edu.year && <div style={{ color: "#6366f1", fontSize: "10px" }}>{edu.year}</div>}
-              </div>
-            ))}
+            <div className="space-y-3">
+              {education.filter((e) => e.college || e.degree).map((edu, i) => (
+                <div key={i}>
+                  <div className="font-semibold text-white text-[11px] leading-tight">{edu.degree}</div>
+                  <div className="text-slate-400 text-[10px] mt-0.5">{edu.college}</div>
+                  {edu.year && (
+                    <div className="text-indigo-300 text-[10px] mt-0.5">{edu.year}</div>
+                  )}
+                </div>
+              ))}
+            </div>
           </div>
         )}
-
       </div>
 
-      {/* ── MAIN CONTENT ── */}
-      <div style={{ flex: 1, padding: "32px 28px", display: "flex", flexDirection: "column", gap: "24px" }}>
+      {/* ═══ MAIN CONTENT ═══ */}
+      <div className="flex-1 p-7 flex flex-col gap-5">
 
         {/* Summary */}
         {summary && (
           <div>
-            <h2 style={{ fontSize: "8px", fontWeight: "bold", letterSpacing: "0.2em", textTransform: "uppercase", color: "#6366f1", marginBottom: "8px", borderBottom: "1px solid #1e293b", paddingBottom: "6px" }}>
+            <h2 className="text-[10px] font-bold tracking-[0.15em] uppercase text-indigo-600 mb-2 pb-1.5 border-b border-gray-200 flex items-center gap-2">
+              <span className="w-1 h-3.5 bg-indigo-500 rounded-full inline-block" />
               Profile
             </h2>
-            <p style={{ color: "#cbd5e1", fontSize: "13px", lineHeight: 1.7 }}>{summary}</p>
+            <p className="text-gray-600 text-[13px] leading-relaxed">{summary}</p>
           </div>
         )}
 
         {/* Experience */}
-        {experience.some((e) => e.role || e.company) && (
+        {hasExperience && (
           <div>
-            <h2 style={{ fontSize: "8px", fontWeight: "bold", letterSpacing: "0.2em", textTransform: "uppercase", color: "#6366f1", marginBottom: "12px", borderBottom: "1px solid #1e293b", paddingBottom: "6px" }}>
+            <h2 className="text-[10px] font-bold tracking-[0.15em] uppercase text-indigo-600 mb-3 pb-1.5 border-b border-gray-200 flex items-center gap-2">
+              <span className="w-1 h-3.5 bg-indigo-500 rounded-full inline-block" />
               Experience
             </h2>
-            {experience.filter((e) => e.role || e.company).map((exp, i) => (
-              <div key={i} style={{ marginBottom: "16px", paddingLeft: "10px", borderLeft: "2px solid #6366f1" }}>
-                <div style={{ fontWeight: "bold", color: "#f1f5f9", fontSize: "13px" }}>{exp.role}</div>
-                {exp.company && <div style={{ color: "#6366f1", fontSize: "11px", marginTop: "2px" }}>{exp.company}</div>}
-                {exp.description && <p style={{ color: "#94a3b8", fontSize: "12px", marginTop: "6px", lineHeight: 1.6, whiteSpace: "pre-line" }}>{exp.description}</p>}
-              </div>
-            ))}
+            <div className="space-y-4">
+              {experience.filter((e) => e.role || e.company).map((exp, i) => (
+                <div key={i} className="pl-3 border-l-2 border-indigo-100">
+                  <div className="font-bold text-gray-900 text-[13px]">{exp.role}</div>
+                  {exp.company && (
+                    <div className="text-indigo-500 text-[11px] mt-0.5 font-medium">{exp.company}</div>
+                  )}
+                  {exp.description && (
+                    <p className="text-gray-500 text-[12px] mt-1.5 leading-relaxed whitespace-pre-line">
+                      {exp.description}
+                    </p>
+                  )}
+                </div>
+              ))}
+            </div>
           </div>
         )}
 
         {/* Projects */}
-        {projects.some((p) => p.title) && (
+        {hasProjects && (
           <div>
-            <h2 style={{ fontSize: "8px", fontWeight: "bold", letterSpacing: "0.2em", textTransform: "uppercase", color: "#6366f1", marginBottom: "12px", borderBottom: "1px solid #1e293b", paddingBottom: "6px" }}>
+            <h2 className="text-[10px] font-bold tracking-[0.15em] uppercase text-indigo-600 mb-3 pb-1.5 border-b border-gray-200 flex items-center gap-2">
+              <span className="w-1 h-3.5 bg-indigo-500 rounded-full inline-block" />
               Projects
             </h2>
-            {projects.filter((p) => p.title).map((proj, i) => (
-              <div key={i} style={{ marginBottom: "16px", paddingLeft: "10px", borderLeft: "2px solid #334155" }}>
-                <div style={{ display: "flex", alignItems: "baseline", gap: "8px", flexWrap: "wrap" }}>
-                  <span style={{ fontWeight: "bold", color: "#f1f5f9", fontSize: "13px" }}>{proj.title}</span>
-                  {proj.tech && <span style={{ color: "#818cf8", fontSize: "10px" }}>{proj.tech}</span>}
+            <div className="space-y-4">
+              {projects.filter((p) => p.title).map((proj, i) => (
+                <div key={i} className="pl-3 border-l-2 border-gray-100">
+                  <div className="flex items-baseline gap-2 flex-wrap">
+                    <span className="font-bold text-gray-900 text-[13px]">{proj.title}</span>
+                  </div>
+                  {proj.tech && (
+                    <div className="flex gap-1 mt-1 flex-wrap">
+                      {proj.tech.split(",").map((t, j) => (
+                        <span key={j} className="text-[9px] px-1.5 py-px bg-indigo-50 text-indigo-600 rounded font-medium">
+                          {t.trim()}
+                        </span>
+                      ))}
+                    </div>
+                  )}
+                  {proj.description && (
+                    <p className="text-gray-500 text-[12px] mt-1.5 leading-relaxed whitespace-pre-line">
+                      {proj.description}
+                    </p>
+                  )}
                 </div>
-                {proj.description && <p style={{ color: "#94a3b8", fontSize: "12px", marginTop: "6px", lineHeight: 1.6, whiteSpace: "pre-line" }}>{proj.description}</p>}
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
         )}
 

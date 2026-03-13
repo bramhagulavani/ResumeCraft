@@ -2,144 +2,284 @@ import Link from "next/link";
 
 export default function LandingPage() {
   return (
-    <div className="min-h-screen bg-slate-950 text-white">
+    <div className="min-h-screen bg-[#0a0a0f] text-white overflow-x-hidden">
 
-      {/* NAVBAR */}
-      <nav className="flex items-center justify-between px-10 py-5 border-b border-slate-800">
-        <div className="text-2xl font-bold text-white">
-          Resume<span className="text-indigo-500">Craft</span>
+      {/* ═══ AMBIENT BACKGROUND GLOWS ═══ */}
+      <div className="fixed inset-0 pointer-events-none overflow-hidden">
+        <div className="absolute top-[-20%] left-[-10%] w-[600px] h-[600px] rounded-full bg-violet-600/[0.07] blur-[120px]" />
+        <div className="absolute top-[30%] right-[-15%] w-[500px] h-[500px] rounded-full bg-indigo-600/[0.05] blur-[100px]" />
+        <div className="absolute bottom-[-10%] left-[30%] w-[400px] h-[400px] rounded-full bg-purple-600/[0.06] blur-[100px]" />
+      </div>
+
+      {/* ═══ NAVBAR ═══ */}
+      <nav className="relative z-50 flex items-center justify-between px-6 md:px-12 lg:px-20 py-5 border-b border-white/[0.06]">
+        <div className="text-2xl font-bold tracking-tight">
+          Resume<span className="gradient-text">Craft</span>
         </div>
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-3">
           <Link
             href="/sign-in"
-            className="text-slate-400 hover:text-white text-sm transition"
+            className="px-5 py-2.5 text-slate-400 hover:text-white text-sm font-medium transition-colors duration-300"
           >
             Sign In
           </Link>
           <Link
             href="/sign-up"
-            className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-sm font-semibold transition"
+            className="group relative px-6 py-2.5 bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 text-white rounded-xl text-sm font-semibold transition-all duration-300 shadow-lg shadow-violet-900/25 hover:shadow-violet-800/40 hover:scale-[1.02]"
           >
             Get Started Free
           </Link>
         </div>
       </nav>
 
-      {/* HERO SECTION */}
-      <section className="flex flex-col items-center justify-center text-center px-6 py-32">
-        <div className="inline-block px-4 py-1.5 bg-indigo-600/20 border border-indigo-500/30 rounded-full text-indigo-400 text-xs font-semibold mb-6 tracking-widest uppercase">
-          AI-Powered Resume Builder
+      {/* ═══ HERO SECTION ═══ */}
+      <section className="relative z-10 flex flex-col lg:flex-row items-center justify-between px-6 md:px-12 lg:px-20 py-24 md:py-32 lg:py-40 max-w-[1400px] mx-auto gap-16">
+
+        {/* Left — Text Content */}
+        <div className="flex-1 max-w-2xl animate-fade-in-up">
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-violet-500/[0.08] border border-violet-500/20 rounded-full text-violet-400 text-xs font-semibold mb-8 tracking-widest uppercase backdrop-blur-sm">
+            <span className="w-2 h-2 rounded-full bg-violet-400 animate-pulse-glow" />
+            AI-Powered Resume Builder
+          </div>
+
+          <h1 className="text-5xl md:text-6xl lg:text-7xl font-extrabold text-white leading-[1.05] tracking-tight">
+            Build Resumes That
+            <br />
+            <span className="gradient-text">Get You Hired</span>
+          </h1>
+
+          <p className="mt-8 text-slate-400 text-lg md:text-xl leading-relaxed max-w-lg">
+            Create stunning, ATS-friendly resumes in minutes.
+            Choose from premium templates, edit with live preview,
+            and download as PDF instantly.
+          </p>
+
+          <div className="flex flex-wrap items-center gap-4 mt-10">
+            <Link
+              href="/sign-up"
+              className="group relative px-8 py-4 bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 text-white rounded-2xl font-semibold text-sm transition-all duration-300 shadow-xl shadow-violet-900/30 hover:shadow-violet-800/50 hover:scale-[1.03] hover:-translate-y-0.5"
+            >
+              <span className="relative z-10">Build Your Resume Free →</span>
+              <div className="absolute inset-0 rounded-2xl shimmer-btn" />
+            </Link>
+            <Link
+              href="/sign-in"
+              className="px-8 py-4 bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] hover:border-white/[0.15] text-white rounded-2xl font-semibold text-sm transition-all duration-300 backdrop-blur-sm"
+            >
+              Sign In
+            </Link>
+          </div>
+
+          <p className="mt-5 text-slate-600 text-xs tracking-wide">
+            No credit card required · Free forever
+          </p>
         </div>
 
-        <h1 className="text-5xl md:text-7xl font-bold text-white leading-tight max-w-4xl">
-          Build Resumes That
-          <span className="text-indigo-500"> Get You Hired</span>
-        </h1>
+        {/* Right — Floating Resume Mockup */}
+        <div className="flex-1 flex justify-center lg:justify-end animate-float" style={{ animationDelay: '0.5s' }}>
+          <div className="relative">
+            {/* Glow behind mockup */}
+            <div className="absolute inset-0 bg-gradient-to-br from-violet-600/20 to-indigo-600/20 blur-[60px] rounded-3xl scale-110" />
 
-        <p className="mt-6 text-slate-400 text-lg max-w-xl leading-relaxed">
-          Create stunning, ATS-friendly resumes in minutes.
-          Choose from premium templates, edit with live preview,
-          and download as PDF instantly.
-        </p>
+            {/* Resume mockup card */}
+            <div className="relative w-[320px] md:w-[360px] bg-white rounded-2xl shadow-2xl shadow-black/50 p-8 transform rotate-[-2deg] hover:rotate-0 transition-transform duration-700">
+              <div className="w-24 h-3 bg-slate-800 rounded-full mb-2" />
+              <div className="w-16 h-2 bg-violet-400/60 rounded-full mb-6" />
 
-        <div className="flex items-center gap-4 mt-10">
-          <Link
-            href="/sign-up"
-            className="px-8 py-3.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl font-semibold text-sm transition"
-          >
-            Build Your Resume Free →
-          </Link>
-          <Link
-            href="/sign-in"
-            className="px-8 py-3.5 bg-slate-800 hover:bg-slate-700 text-white rounded-xl font-semibold text-sm transition"
-          >
-            Sign In
-          </Link>
+              <div className="w-full h-2 bg-slate-200 rounded-full mb-2" />
+              <div className="w-4/5 h-2 bg-slate-200 rounded-full mb-2" />
+              <div className="w-3/4 h-2 bg-slate-100 rounded-full mb-6" />
+
+              <div className="w-20 h-2.5 bg-indigo-500/40 rounded-full mb-3" />
+              <div className="flex gap-2 mb-6">
+                <div className="px-3 py-1 bg-violet-100 text-violet-600 rounded-full text-[8px] font-bold">React</div>
+                <div className="px-3 py-1 bg-indigo-100 text-indigo-600 rounded-full text-[8px] font-bold">Node.js</div>
+                <div className="px-3 py-1 bg-purple-100 text-purple-600 rounded-full text-[8px] font-bold">Python</div>
+              </div>
+
+              <div className="w-20 h-2.5 bg-indigo-500/40 rounded-full mb-3" />
+              <div className="w-full h-2 bg-slate-200 rounded-full mb-1.5" />
+              <div className="w-5/6 h-2 bg-slate-200 rounded-full mb-1.5" />
+              <div className="w-4/6 h-2 bg-slate-100 rounded-full mb-5" />
+
+              <div className="w-20 h-2.5 bg-indigo-500/40 rounded-full mb-3" />
+              <div className="w-full h-2 bg-slate-200 rounded-full mb-1.5" />
+              <div className="w-3/4 h-2 bg-slate-100 rounded-full" />
+            </div>
+
+            {/* Floating badge */}
+            <div className="absolute -top-4 -right-4 px-4 py-2 bg-gradient-to-r from-violet-600 to-indigo-600 rounded-xl text-white text-xs font-bold shadow-lg shadow-violet-900/40 animate-pulse-glow">
+              ✨ AI-Powered
+            </div>
+          </div>
         </div>
-
-        <p className="mt-4 text-slate-600 text-xs">
-          No credit card required · Free forever
-        </p>
       </section>
 
-      {/* FEATURES SECTION */}
-      <section className="px-10 py-20 border-t border-slate-800">
-        <h2 className="text-3xl font-bold text-center mb-4">
-          Everything You Need
-        </h2>
-        <p className="text-slate-400 text-center mb-14 text-sm">
-          Built for students, developers, and professionals.
-        </p>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
+      {/* ═══ SOCIAL PROOF ═══ */}
+      <section className="relative z-10 border-y border-white/[0.06] py-12">
+        <div className="max-w-5xl mx-auto px-6 flex flex-wrap items-center justify-center gap-12 md:gap-20">
           {[
-            {
-              icon: "✍️",
-              title: "Live Resume Builder",
-              desc: "Fill your details and watch your resume update in real-time on the right side.",
-            },
-            {
-              icon: "🎨",
-              title: "Premium Templates",
-              desc: "Choose from Classic, Modern, and Minimal templates to match your style.",
-            },
-            {
-              icon: "📄",
-              title: "One-Click PDF Export",
-              desc: "Download your resume as a professional PDF instantly — no watermarks.",
-            },
-            {
-              icon: "🤖",
-              title: "AI Resume Generator",
-              desc: "Describe yourself and let AI write your summary, skills, and bullet points.",
-            },
-            {
-              icon: "🔐",
-              title: "Secure & Private",
-              desc: "Your resumes are tied to your account. Nobody else can see them.",
-            },
-            {
-              icon: "⚡",
-              title: "Fast & Modern",
-              desc: "Built with Next.js, MongoDB, and Tailwind for a blazing fast experience.",
-            },
-          ].map((feature, i) => (
-            <div
-              key={i}
-              className="bg-slate-900 border border-slate-800 rounded-2xl p-6 hover:border-indigo-500/40 transition"
-            >
-              <div className="text-3xl mb-4">{feature.icon}</div>
-              <h3 className="text-white font-semibold mb-2">{feature.title}</h3>
-              <p className="text-slate-400 text-sm leading-relaxed">
-                {feature.desc}
-              </p>
+            { number: "10,000+", label: "Resumes Created" },
+            { number: "2,500+", label: "Happy Users" },
+            { number: "98%", label: "ATS Pass Rate" },
+            { number: "4.9★", label: "User Rating" },
+          ].map((stat, i) => (
+            <div key={i} className="text-center">
+              <div className="text-3xl md:text-4xl font-extrabold gradient-text">{stat.number}</div>
+              <div className="text-slate-500 text-xs font-medium mt-1 uppercase tracking-wider">{stat.label}</div>
             </div>
           ))}
         </div>
       </section>
 
-      {/* CTA SECTION */}
-      <section className="px-10 py-24 border-t border-slate-800 text-center">
-        <h2 className="text-4xl font-bold mb-4">
-          Ready to Build Your Resume?
-        </h2>
-        <p className="text-slate-400 mb-8 text-sm">
-          Join thousands of professionals who use ResumeCraft.
-        </p>
-        <Link
-          href="/sign-up"
-          className="px-10 py-4 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl font-semibold text-sm transition"
-        >
-          Get Started for Free →
-        </Link>
+      {/* ═══ FEATURES SECTION ═══ */}
+      <section className="relative z-10 px-6 md:px-12 lg:px-20 py-24 md:py-32">
+        <div className="max-w-6xl mx-auto">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl md:text-5xl font-extrabold tracking-tight mb-4">
+              Everything You <span className="gradient-text">Need</span>
+            </h2>
+            <p className="text-slate-500 text-base max-w-md mx-auto">
+              Built for students, developers, and professionals who want to stand out.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+            {[
+              {
+                icon: "✍️",
+                title: "Live Resume Builder",
+                desc: "Fill your details and watch your resume update in real-time on the right side.",
+                gradient: "from-violet-500/20 to-violet-600/5",
+                border: "hover:border-violet-500/30",
+                glow: "group-hover:bg-violet-500/10",
+              },
+              {
+                icon: "🎨",
+                title: "Premium Templates",
+                desc: "Choose from Classic, Modern, and Minimal templates to match your style.",
+                gradient: "from-indigo-500/20 to-indigo-600/5",
+                border: "hover:border-indigo-500/30",
+                glow: "group-hover:bg-indigo-500/10",
+              },
+              {
+                icon: "📄",
+                title: "One-Click PDF Export",
+                desc: "Download your resume as a professional PDF instantly — no watermarks.",
+                gradient: "from-purple-500/20 to-purple-600/5",
+                border: "hover:border-purple-500/30",
+                glow: "group-hover:bg-purple-500/10",
+              },
+              {
+                icon: "🤖",
+                title: "AI Resume Generator",
+                desc: "Describe yourself and let AI write your summary, skills, and bullet points.",
+                gradient: "from-fuchsia-500/20 to-fuchsia-600/5",
+                border: "hover:border-fuchsia-500/30",
+                glow: "group-hover:bg-fuchsia-500/10",
+              },
+              {
+                icon: "🔐",
+                title: "Secure & Private",
+                desc: "Your resumes are tied to your account. Nobody else can see them.",
+                gradient: "from-emerald-500/20 to-emerald-600/5",
+                border: "hover:border-emerald-500/30",
+                glow: "group-hover:bg-emerald-500/10",
+              },
+              {
+                icon: "⚡",
+                title: "Fast & Modern",
+                desc: "Built with Next.js, MongoDB, and Tailwind for a blazing fast experience.",
+                gradient: "from-amber-500/20 to-amber-600/5",
+                border: "hover:border-amber-500/30",
+                glow: "group-hover:bg-amber-500/10",
+              },
+            ].map((feature, i) => (
+              <div
+                key={i}
+                className={`group relative bg-white/[0.02] border border-white/[0.06] ${feature.border} rounded-2xl p-7 transition-all duration-500 hover:scale-[1.02] hover:-translate-y-1 overflow-hidden`}
+              >
+                {/* Hover glow background */}
+                <div className={`absolute inset-0 ${feature.glow} transition-colors duration-500 rounded-2xl`} />
+
+                <div className="relative z-10">
+                  <div className={`w-14 h-14 flex items-center justify-center rounded-xl bg-gradient-to-br ${feature.gradient} text-2xl mb-5 border border-white/[0.05]`}>
+                    {feature.icon}
+                  </div>
+                  <h3 className="text-white font-bold text-lg mb-2">{feature.title}</h3>
+                  <p className="text-slate-400 text-sm leading-relaxed">
+                    {feature.desc}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
       </section>
 
-      {/* FOOTER */}
-      <footer className="border-t border-slate-800 px-10 py-6 flex items-center justify-between text-slate-500 text-xs">
-        <div>
+      {/* ═══ HOW IT WORKS ═══ */}
+      <section className="relative z-10 px-6 md:px-12 lg:px-20 py-24 border-t border-white/[0.06]">
+        <div className="max-w-4xl mx-auto">
+          <h2 className="text-4xl md:text-5xl font-extrabold text-center tracking-tight mb-16">
+            Three Steps to Your <span className="gradient-text">Dream Resume</span>
+          </h2>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {[
+              { step: "01", title: "Describe Yourself", desc: "Enter your details or let AI auto-generate from a brief description." },
+              { step: "02", title: "Choose a Template", desc: "Pick from Premium templates — Classic, Modern, or Minimal." },
+              { step: "03", title: "Download & Apply", desc: "Export as PDF in one-click and start applying to your dream jobs." },
+            ].map((item, i) => (
+              <div key={i} className="text-center group">
+                <div className="text-5xl font-black gradient-text mb-4">{item.step}</div>
+                <h3 className="text-white font-bold text-lg mb-2">{item.title}</h3>
+                <p className="text-slate-500 text-sm leading-relaxed">{item.desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ═══ CTA SECTION ═══ */}
+      <section className="relative z-10 px-6 md:px-12 lg:px-20 py-24 md:py-32">
+        <div className="max-w-3xl mx-auto text-center relative">
+          {/* Background glow */}
+          <div className="absolute inset-0 bg-gradient-to-r from-violet-600/10 via-indigo-600/10 to-purple-600/10 blur-[80px] rounded-full" />
+
+          <div className="relative">
+            <h2 className="text-4xl md:text-6xl font-extrabold tracking-tight mb-6">
+              Ready to Build Your
+              <br />
+              <span className="gradient-text">Perfect Resume?</span>
+            </h2>
+            <p className="text-slate-400 text-lg mb-10 max-w-md mx-auto">
+              Join thousands of professionals who use ResumeCraft to land their dream jobs.
+            </p>
+            <Link
+              href="/sign-up"
+              className="group relative inline-flex items-center gap-2 px-10 py-4 bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 text-white rounded-2xl font-semibold transition-all duration-300 shadow-2xl shadow-violet-900/30 hover:shadow-violet-800/50 hover:scale-[1.03] hover:-translate-y-0.5"
+            >
+              <span>Get Started for Free</span>
+              <span className="group-hover:translate-x-1 transition-transform duration-300">→</span>
+              <div className="absolute inset-0 rounded-2xl shimmer-btn" />
+            </Link>
+            <p className="mt-5 text-slate-600 text-xs">
+              Free forever · No credit card required
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* ═══ FOOTER ═══ */}
+      <footer className="relative z-10 border-t border-white/[0.06] px-6 md:px-12 lg:px-20 py-8 flex flex-col md:flex-row items-center justify-between gap-4 text-slate-600 text-xs">
+        <div className="font-medium">
           © {new Date().getFullYear()} ResumeCraft. All rights reserved.
         </div>
-        <div>Built with Next.js + MongoDB + AI</div>
+        <div className="flex items-center gap-1.5">
+          <span>Built with</span>
+          <span className="text-violet-400">♥</span>
+          <span>using Next.js + MongoDB + AI</span>
+        </div>
       </footer>
 
     </div>

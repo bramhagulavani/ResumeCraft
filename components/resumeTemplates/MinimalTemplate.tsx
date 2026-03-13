@@ -1,109 +1,143 @@
 import { ResumeData } from "./types";
 
 export default function MinimalTemplate({ name, email, summary, skills, experience, education, projects }: ResumeData) {
-  return (
-    <div style={{ background: "#ffffff", color: "#374151", fontFamily: "'Helvetica Neue', Arial, sans-serif", padding: "48px 40px" }}>
+  const hasExperience = experience.some((e) => e.role || e.company);
+  const hasEducation = education.some((e) => e.college || e.degree);
+  const hasProjects = projects.some((p) => p.title);
 
-      {/* Header */}
-      <div style={{ marginBottom: "36px" }}>
-        <h1 style={{ fontSize: "32px", fontWeight: "300", color: "#111827", letterSpacing: "0.08em", margin: 0, textTransform: "uppercase" }}>
+  return (
+    <div className="bg-white text-gray-600 p-12 max-w-[800px] mx-auto" style={{ fontFamily: "'Helvetica Neue', 'Inter', Arial, sans-serif" }}>
+
+      {/* ═══ HEADER ═══ */}
+      <div className="mb-10">
+        <h1 className="text-4xl font-light text-gray-900 tracking-widest uppercase leading-none">
           {name || "Your Name"}
         </h1>
-        <div style={{ width: "40px", height: "2px", background: "#111827", margin: "12px 0" }} />
-        <p style={{ color: "#9ca3af", fontSize: "12px", letterSpacing: "0.05em" }}>{email}</p>
+        <div className="w-8 h-px bg-gray-900 mt-3 mb-2.5" />
+        {email && (
+          <p className="text-[11px] text-gray-400 tracking-wider">{email}</p>
+        )}
       </div>
 
-      {/* Summary */}
+      {/* ═══ SUMMARY ═══ */}
       {summary && (
-        <div style={{ marginBottom: "32px", display: "flex", gap: "24px" }}>
-          <div style={{ width: "80px", flexShrink: 0 }}>
-            <span style={{ fontSize: "9px", fontWeight: "600", letterSpacing: "0.2em", textTransform: "uppercase", color: "#d1d5db" }}>
+        <div className="mb-8 flex gap-6">
+          <div className="w-20 flex-shrink-0 pt-0.5">
+            <span className="text-[9px] font-semibold tracking-[0.2em] uppercase text-gray-300">
               About
             </span>
           </div>
-          <p style={{ color: "#6b7280", fontSize: "13px", lineHeight: 1.8, margin: 0, flex: 1 }}>{summary}</p>
+          <div className="flex-1 border-t border-gray-100 pt-2">
+            <p className="text-[13px] text-gray-500 leading-[1.8]">{summary}</p>
+          </div>
         </div>
       )}
 
-      {/* Skills */}
+      {/* ═══ SKILLS ═══ */}
       {skills.length > 0 && (
-        <div style={{ marginBottom: "32px", display: "flex", gap: "24px" }}>
-          <div style={{ width: "80px", flexShrink: 0 }}>
-            <span style={{ fontSize: "9px", fontWeight: "600", letterSpacing: "0.2em", textTransform: "uppercase", color: "#d1d5db" }}>
+        <div className="mb-8 flex gap-6">
+          <div className="w-20 flex-shrink-0 pt-0.5">
+            <span className="text-[9px] font-semibold tracking-[0.2em] uppercase text-gray-300">
               Skills
             </span>
           </div>
-          <div style={{ flex: 1, display: "flex", flexWrap: "wrap", gap: "6px" }}>
-            {skills.map((skill, i) => (
-              <span key={i} style={{ fontSize: "11px", color: "#6b7280", padding: "2px 8px", border: "1px solid #e5e7eb", borderRadius: "2px" }}>
-                {skill}
-              </span>
-            ))}
+          <div className="flex-1 border-t border-gray-100 pt-2">
+            <div className="flex flex-wrap gap-1.5">
+              {skills.map((skill, i) => (
+                <span
+                  key={i}
+                  className="text-[11px] text-gray-500 px-2 py-0.5 border border-gray-200 rounded-sm"
+                >
+                  {skill}
+                </span>
+              ))}
+            </div>
           </div>
         </div>
       )}
 
-      {/* Experience */}
-      {experience.some((e) => e.role || e.company) && (
-        <div style={{ marginBottom: "32px", display: "flex", gap: "24px" }}>
-          <div style={{ width: "80px", flexShrink: 0 }}>
-            <span style={{ fontSize: "9px", fontWeight: "600", letterSpacing: "0.2em", textTransform: "uppercase", color: "#d1d5db" }}>
+      {/* ═══ EXPERIENCE ═══ */}
+      {hasExperience && (
+        <div className="mb-8 flex gap-6">
+          <div className="w-20 flex-shrink-0 pt-0.5">
+            <span className="text-[9px] font-semibold tracking-[0.2em] uppercase text-gray-300">
               Work
             </span>
           </div>
-          <div style={{ flex: 1 }}>
-            {experience.filter((e) => e.role || e.company).map((exp, i) => (
-              <div key={i} style={{ marginBottom: "20px" }}>
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline" }}>
-                  <span style={{ fontWeight: "600", color: "#111827", fontSize: "13px" }}>{exp.role}</span>
-                  {exp.company && <span style={{ color: "#9ca3af", fontSize: "11px" }}>{exp.company}</span>}
+          <div className="flex-1 border-t border-gray-100 pt-2">
+            <div className="space-y-5">
+              {experience.filter((e) => e.role || e.company).map((exp, i) => (
+                <div key={i}>
+                  <div className="text-gray-900 font-medium text-[14px] leading-tight">{exp.role}</div>
+                  {exp.company && (
+                    <div className="text-gray-400 text-[11px] italic mt-0.5">{exp.company}</div>
+                  )}
+                  {exp.description && (
+                    <p className="text-gray-500 text-[12px] mt-2 leading-[1.7] whitespace-pre-line pl-3 border-l border-gray-200">
+                      {exp.description}
+                    </p>
+                  )}
                 </div>
-                {exp.description && <p style={{ color: "#6b7280", fontSize: "12px", marginTop: "4px", lineHeight: 1.7, whiteSpace: "pre-line" }}>{exp.description}</p>}
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
         </div>
       )}
 
-      {/* Education */}
-      {education.some((e) => e.college || e.degree) && (
-        <div style={{ marginBottom: "32px", display: "flex", gap: "24px" }}>
-          <div style={{ width: "80px", flexShrink: 0 }}>
-            <span style={{ fontSize: "9px", fontWeight: "600", letterSpacing: "0.2em", textTransform: "uppercase", color: "#d1d5db" }}>
+      {/* ═══ EDUCATION ═══ */}
+      {hasEducation && (
+        <div className="mb-8 flex gap-6">
+          <div className="w-20 flex-shrink-0 pt-0.5">
+            <span className="text-[9px] font-semibold tracking-[0.2em] uppercase text-gray-300">
               Education
             </span>
           </div>
-          <div style={{ flex: 1 }}>
-            {education.filter((e) => e.college || e.degree).map((edu, i) => (
-              <div key={i} style={{ marginBottom: "14px" }}>
-                <div style={{ fontWeight: "600", color: "#111827", fontSize: "13px" }}>{edu.degree}</div>
-                <div style={{ color: "#9ca3af", fontSize: "11px", marginTop: "2px" }}>
-                  {edu.college}{edu.year && <span> · {edu.year}</span>}
+          <div className="flex-1 border-t border-gray-100 pt-2">
+            <div className="space-y-3">
+              {education.filter((e) => e.college || e.degree).map((edu, i) => (
+                <div key={i} className="flex items-baseline justify-between">
+                  <div>
+                    <div className="font-medium text-gray-900 text-[13px]">{edu.degree}</div>
+                    <div className="text-gray-400 text-[11px] mt-0.5">{edu.college}</div>
+                  </div>
+                  {edu.year && (
+                    <span className="text-gray-300 text-[10px] flex-shrink-0 tracking-wider">
+                      {edu.year}
+                    </span>
+                  )}
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
         </div>
       )}
 
-      {/* Projects */}
-      {projects.some((p) => p.title) && (
-        <div style={{ marginBottom: "32px", display: "flex", gap: "24px" }}>
-          <div style={{ width: "80px", flexShrink: 0 }}>
-            <span style={{ fontSize: "9px", fontWeight: "600", letterSpacing: "0.2em", textTransform: "uppercase", color: "#d1d5db" }}>
+      {/* ═══ PROJECTS ═══ */}
+      {hasProjects && (
+        <div className="mb-8 flex gap-6">
+          <div className="w-20 flex-shrink-0 pt-0.5">
+            <span className="text-[9px] font-semibold tracking-[0.2em] uppercase text-gray-300">
               Projects
             </span>
           </div>
-          <div style={{ flex: 1 }}>
-            {projects.filter((p) => p.title).map((proj, i) => (
-              <div key={i} style={{ marginBottom: "16px" }}>
-                <div style={{ display: "flex", alignItems: "baseline", gap: "8px" }}>
-                  <span style={{ fontWeight: "600", color: "#111827", fontSize: "13px" }}>{proj.title}</span>
-                  {proj.tech && <span style={{ color: "#9ca3af", fontSize: "10px" }}>{proj.tech}</span>}
+          <div className="flex-1 border-t border-gray-100 pt-2">
+            <div className="space-y-5">
+              {projects.filter((p) => p.title).map((proj, i) => (
+                <div key={i}>
+                  <div className="flex items-baseline gap-3">
+                    <span className="font-medium text-gray-900 text-[13px]">{proj.title}</span>
+                    {proj.tech && (
+                      <span className="text-gray-300 text-[10px] tracking-wide">{proj.tech}</span>
+                    )}
+                  </div>
+                  {proj.description && (
+                    <p className="text-gray-500 text-[12px] mt-2 leading-[1.7] whitespace-pre-line pl-3 border-l border-gray-200">
+                      {proj.description}
+                    </p>
+                  )}
                 </div>
-                {proj.description && <p style={{ color: "#6b7280", fontSize: "12px", marginTop: "4px", lineHeight: 1.7, whiteSpace: "pre-line" }}>{proj.description}</p>}
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
         </div>
       )}

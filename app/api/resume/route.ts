@@ -16,14 +16,13 @@ export async function GET() {
       .sort({ createdAt: -1 })
       .lean();
 
-    const sanitized = resumes.map((r: any) => ({
+    const sanitized = resumes.map((r: Record<string, unknown>) => ({
       ...r,
-      _id: r._id.toString(),
+      _id: String(r._id),
     }));
 
     return NextResponse.json(sanitized, { status: 200 });
   } catch {
-    // ✅ Fixed: return empty array on error, not an object
     return NextResponse.json([], { status: 200 });
   }
 }
@@ -49,11 +48,10 @@ export async function POST(req: Request) {
       { message: "Resume saved successfully", data: responseData },
       { status: 201 }
     );
-  }  catch (error: any) {
-  console.error("POST ERROR DETAILS:", error.message);
-  return NextResponse.json(
-    { message: "Error saving resume", error: error.message },
-    { status: 500 }
-  );
+  } catch (error: unknown) {
+    return NextResponse.json(
+      { message: error instanceof Error ? error.message : "Error saving resume" },
+      { status: 500 }
+    );
   }
 }

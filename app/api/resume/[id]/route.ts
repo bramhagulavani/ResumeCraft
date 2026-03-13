@@ -6,7 +6,7 @@ import { auth } from "@clerk/nextjs/server";
 
 export async function GET(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const { userId } = await auth();
@@ -15,13 +15,14 @@ export async function GET(
     }
 
     await connectToDatabase();
-    const id = params.id?.trim();
+    const { id } = await params;
+    const trimmedId = id?.trim();
 
-    if (!mongoose.Types.ObjectId.isValid(id)) {
+    if (!mongoose.Types.ObjectId.isValid(trimmedId)) {
       return NextResponse.json({ message: "Invalid ID" }, { status: 400 });
     }
 
-    const resume = await Resume.findOne({ _id: id, userId }).lean();
+    const resume = await Resume.findOne({ _id: trimmedId, userId }).lean();
 
     if (!resume) {
       return NextResponse.json({ message: "Resume not found" }, { status: 404 });
@@ -29,7 +30,7 @@ export async function GET(
 
     return NextResponse.json({
       ...resume,
-      _id: (resume._id as any).toString(),
+      _id: String(resume._id),
     });
   } catch {
     return NextResponse.json({ message: "Server error" }, { status: 500 });
@@ -38,7 +39,7 @@ export async function GET(
 
 export async function DELETE(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const { userId } = await auth();
@@ -47,13 +48,14 @@ export async function DELETE(
     }
 
     await connectToDatabase();
-    const id = params.id?.trim();
+    const { id } = await params;
+    const trimmedId = id?.trim();
 
-    if (!mongoose.Types.ObjectId.isValid(id)) {
+    if (!mongoose.Types.ObjectId.isValid(trimmedId)) {
       return NextResponse.json({ message: "Invalid ID" }, { status: 400 });
     }
 
-    const deleted = await Resume.findOneAndDelete({ _id: id, userId });
+    const deleted = await Resume.findOneAndDelete({ _id: trimmedId, userId });
 
     if (!deleted) {
       return NextResponse.json(
@@ -73,7 +75,7 @@ export async function DELETE(
 
 export async function PUT(
   req: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const { userId } = await auth();
@@ -83,10 +85,11 @@ export async function PUT(
 
     await connectToDatabase();
     const body = await req.json();
-    const id = params.id?.trim();
+    const { id } = await params;
+    const trimmedId = id?.trim();
 
     const updated = await Resume.findOneAndUpdate(
-      { _id: id, userId },
+      { _id: trimmedId, userId },
       body,
       { new: true }
     );

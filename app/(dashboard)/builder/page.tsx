@@ -16,7 +16,8 @@ const TEMPLATE_META: Record<TemplateKey, { label: string }> = {
 };
 
 const SectionHeader = ({ children }: { children: React.ReactNode }) => (
-  <h3 className="text-[11px] font-bold tracking-[0.2em] uppercase text-slate-400 mb-3 mt-6 first:mt-0">
+  <h3 className="flex items-center gap-2 text-[11px] font-bold tracking-[0.2em] uppercase text-slate-400 mb-3 mt-8 first:mt-0">
+    <span className="w-1 h-4 bg-gradient-to-b from-violet-500 to-indigo-500 rounded-full" />
     {children}
   </h3>
 );
@@ -37,7 +38,7 @@ const FormInput = ({
     placeholder={placeholder}
     value={value}
     onChange={(e) => onChange(e.target.value)}
-    className="w-full px-3 py-2 rounded-lg bg-slate-800/60 border border-slate-700/60 text-slate-100 placeholder-slate-500 text-sm focus:outline-none focus:border-violet-500 focus:ring-1 focus:ring-violet-500/30 transition-all"
+    className="w-full px-4 py-2.5 rounded-xl bg-white/[0.03] border border-white/[0.06] text-slate-100 placeholder-slate-600 text-sm focus:outline-none focus:border-violet-500/50 focus:ring-1 focus:ring-violet-500/20 focus:bg-white/[0.05] transition-all duration-300"
   />
 );
 
@@ -57,7 +58,7 @@ const FormTextarea = ({
     value={value}
     rows={rows}
     onChange={(e) => onChange(e.target.value)}
-    className="w-full px-3 py-2 rounded-lg bg-slate-800/60 border border-slate-700/60 text-slate-100 placeholder-slate-500 text-sm focus:outline-none focus:border-violet-500 focus:ring-1 focus:ring-violet-500/30 transition-all resize-none"
+    className="w-full px-4 py-2.5 rounded-xl bg-white/[0.03] border border-white/[0.06] text-slate-100 placeholder-slate-600 text-sm focus:outline-none focus:border-violet-500/50 focus:ring-1 focus:ring-violet-500/20 focus:bg-white/[0.05] transition-all duration-300 resize-none"
   />
 );
 
@@ -299,8 +300,9 @@ function BuilderPageInner() {
 
   if (loadingResume) {
     return (
-      <div className="h-full flex items-center justify-center">
-        <p className="text-slate-400 text-sm">Loading resume...</p>
+      <div className="h-full flex flex-col items-center justify-center gap-4">
+        <div className="w-10 h-10 border-2 border-violet-500/30 border-t-violet-500 rounded-full animate-spin" />
+        <p className="text-slate-500 text-sm font-medium">Loading resume...</p>
       </div>
     );
   }
@@ -308,50 +310,61 @@ function BuilderPageInner() {
   return (
     <div className="h-full flex flex-col">
 
-      {/* ── Top Bar ── */}
-      <div className="flex items-center justify-between mb-5">
+      {/* ═══ Top Bar ═══ */}
+      <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">
-            {resumeId ? "Edit Resume" : "Resume Builder"}
+          <h1 className="text-2xl md:text-3xl font-extrabold tracking-tight">
+            {resumeId ? "Edit " : ""}Resume <span className="gradient-text">Builder</span>
           </h1>
           {resumeId && (
-            <p className="text-xs text-slate-500 mt-0.5">Editing existing resume</p>
+            <p className="text-xs text-slate-600 mt-1 flex items-center gap-1.5">
+              <span className="w-1.5 h-1.5 rounded-full bg-amber-500" />
+              Editing existing resume
+            </p>
           )}
         </div>
         <div className="flex gap-3">
           <button
             onClick={downloadPDF}
             disabled={downloading || isEmpty}
-            className="px-5 py-2 bg-slate-700 hover:bg-slate-600 disabled:opacity-40 disabled:cursor-not-allowed rounded-lg text-sm font-semibold transition-all"
+            className="flex items-center gap-2 px-5 py-2.5 bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] hover:border-white/[0.15] disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:bg-white/[0.04] rounded-xl text-sm font-semibold transition-all duration-300 text-slate-300 hover:text-white"
           >
-            {downloading ? "Generating..." : "⬇ Download PDF"}
+            <span>⬇</span>
+            {downloading ? "Generating..." : "Download PDF"}
           </button>
           <button
             onClick={handleSave}
             disabled={saving}
-            className="px-5 py-2 bg-violet-600 hover:bg-violet-500 disabled:opacity-50 disabled:cursor-not-allowed rounded-lg text-sm font-semibold transition-all shadow-lg shadow-violet-900/30"
+            className="relative flex items-center gap-2 px-6 py-2.5 bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed rounded-xl text-sm font-semibold transition-all duration-300 shadow-lg shadow-violet-900/30 hover:shadow-violet-800/50 hover:scale-[1.02] text-white"
           >
-            {saving ? "Saving..." : resumeId ? "Update Resume" : "Save Resume"}
+            {saving ? "Saving..." : resumeId ? "✓ Update Resume" : "✓ Save Resume"}
+            <div className="absolute inset-0 rounded-xl shimmer-btn" />
           </button>
         </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-6 flex-1 min-h-0">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 flex-1 min-h-0">
 
-        {/* ── LEFT: FORM ── */}
-        <div className="bg-slate-900 rounded-2xl border border-slate-800 overflow-y-auto">
-          <div className="p-5 space-y-1">
+        {/* ═══ LEFT: FORM PANEL ═══ */}
+        <div className="relative bg-white/[0.02] rounded-2xl border border-white/[0.06] overflow-y-auto">
+          {/* Subtle top accent */}
+          <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-violet-500/30 to-transparent" />
+
+          <div className="p-6 space-y-1">
 
             {/* AI Generate Button */}
             <button
               onClick={() => { setAiError(""); setAiModalOpen(true); }}
-              className="w-full py-3 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white rounded-xl font-semibold text-sm transition mb-2 flex items-center justify-center gap-2"
+              className="group relative w-full py-3.5 bg-gradient-to-r from-violet-600/90 via-indigo-600/90 to-purple-600/90 hover:from-violet-500 hover:via-indigo-500 hover:to-purple-500 text-white rounded-xl font-semibold text-sm transition-all duration-500 mb-4 flex items-center justify-center gap-2 shadow-lg shadow-violet-900/20 hover:shadow-violet-800/40 overflow-hidden animate-pulse-glow"
             >
-              🤖 Generate with AI
+              <span className="relative z-10 flex items-center gap-2">
+                🤖 Generate with AI
+              </span>
+              <div className="absolute inset-0 shimmer-btn" />
             </button>
 
             <SectionHeader>Personal Info</SectionHeader>
-            <div className="space-y-2">
+            <div className="space-y-3">
               <FormInput placeholder="Full Name" value={name} onChange={setName} />
               <FormInput placeholder="Email Address" value={email} onChange={setEmail} type="email" />
             </div>
@@ -365,7 +378,7 @@ function BuilderPageInner() {
             />
 
             <SectionHeader>Skills</SectionHeader>
-            <div className="space-y-2">
+            <div className="space-y-2.5">
               {skills.map((skill, i) => (
                 <div key={i} className="flex gap-2 items-center">
                   <FormInput
@@ -376,7 +389,7 @@ function BuilderPageInner() {
                   {skills.length > 1 && (
                     <button
                       onClick={() => removeSkill(i)}
-                      className="text-slate-500 hover:text-rose-400 transition-colors text-xl leading-none flex-shrink-0"
+                      className="w-8 h-8 flex items-center justify-center rounded-lg bg-rose-500/[0.06] hover:bg-rose-500/[0.15] border border-rose-500/10 hover:border-rose-500/30 text-rose-400 hover:text-rose-300 transition-all duration-300 text-sm leading-none flex-shrink-0"
                     >
                       ×
                     </button>
@@ -385,17 +398,18 @@ function BuilderPageInner() {
               ))}
               <button
                 onClick={addSkill}
-                className="text-xs text-violet-400 hover:text-violet-300 transition-colors font-medium"
+                className="flex items-center gap-1.5 text-xs text-violet-400 hover:text-violet-300 transition-colors duration-300 font-semibold px-1 py-1"
               >
-                + Add Skill
+                <span className="w-4 h-4 flex items-center justify-center rounded bg-violet-500/10 text-[10px]">+</span>
+                Add Skill
               </button>
             </div>
 
             <SectionHeader>Experience</SectionHeader>
             <div className="space-y-3">
               {experience.map((exp, i) => (
-                <div key={i} className="bg-slate-800/50 border border-slate-700/50 rounded-xl p-3 space-y-2">
-                  <div className="grid grid-cols-2 gap-2">
+                <div key={i} className="bg-white/[0.02] border border-white/[0.05] rounded-xl p-4 space-y-2.5">
+                  <div className="grid grid-cols-2 gap-2.5">
                     <FormInput placeholder="Role / Position" value={exp.role} onChange={(v) => handleExpChange(i, "role", v)} />
                     <FormInput placeholder="Company" value={exp.company} onChange={(v) => handleExpChange(i, "company", v)} />
                   </div>
@@ -408,7 +422,7 @@ function BuilderPageInner() {
                   {experience.length > 1 && (
                     <button
                       onClick={() => removeExp(i)}
-                      className="text-xs text-rose-400/70 hover:text-rose-400 transition-colors"
+                      className="text-xs text-rose-400/60 hover:text-rose-400 transition-colors duration-300 font-medium"
                     >
                       Remove entry
                     </button>
@@ -417,29 +431,30 @@ function BuilderPageInner() {
               ))}
               <button
                 onClick={addExp}
-                className="text-xs text-violet-400 hover:text-violet-300 transition-colors font-medium"
+                className="flex items-center gap-1.5 text-xs text-violet-400 hover:text-violet-300 transition-colors duration-300 font-semibold px-1 py-1"
               >
-                + Add Experience
+                <span className="w-4 h-4 flex items-center justify-center rounded bg-violet-500/10 text-[10px]">+</span>
+                Add Experience
               </button>
             </div>
 
             <SectionHeader>Education</SectionHeader>
             <div className="space-y-3">
               {education.map((edu, i) => (
-                <div key={i} className="bg-slate-800/50 border border-slate-700/50 rounded-xl p-3 space-y-2">
+                <div key={i} className="bg-white/[0.02] border border-white/[0.05] rounded-xl p-4 space-y-2.5">
                   <FormInput
                     placeholder="College / University"
                     value={edu.college}
                     onChange={(v) => handleEduChange(i, "college", v)}
                   />
-                  <div className="grid grid-cols-2 gap-2">
+                  <div className="grid grid-cols-2 gap-2.5">
                     <FormInput placeholder="Degree" value={edu.degree} onChange={(v) => handleEduChange(i, "degree", v)} />
                     <FormInput placeholder="Year (e.g. 2020-2024)" value={edu.year} onChange={(v) => handleEduChange(i, "year", v)} />
                   </div>
                   {education.length > 1 && (
                     <button
                       onClick={() => removeEdu(i)}
-                      className="text-xs text-rose-400/70 hover:text-rose-400 transition-colors"
+                      className="text-xs text-rose-400/60 hover:text-rose-400 transition-colors duration-300 font-medium"
                     >
                       Remove entry
                     </button>
@@ -448,16 +463,17 @@ function BuilderPageInner() {
               ))}
               <button
                 onClick={addEdu}
-                className="text-xs text-violet-400 hover:text-violet-300 transition-colors font-medium"
+                className="flex items-center gap-1.5 text-xs text-violet-400 hover:text-violet-300 transition-colors duration-300 font-semibold px-1 py-1"
               >
-                + Add Education
+                <span className="w-4 h-4 flex items-center justify-center rounded bg-violet-500/10 text-[10px]">+</span>
+                Add Education
               </button>
             </div>
 
             <SectionHeader>Projects</SectionHeader>
             <div className="space-y-3 pb-4">
               {projects.map((proj, i) => (
-                <div key={i} className="bg-slate-800/50 border border-slate-700/50 rounded-xl p-3 space-y-2">
+                <div key={i} className="bg-white/[0.02] border border-white/[0.05] rounded-xl p-4 space-y-2.5">
                   <FormInput placeholder="Project Title" value={proj.title} onChange={(v) => handleProjChange(i, "title", v)} />
                   <FormInput
                     placeholder="Tech Stack (e.g. React, MongoDB)"
@@ -473,7 +489,7 @@ function BuilderPageInner() {
                   {projects.length > 1 && (
                     <button
                       onClick={() => removeProj(i)}
-                      className="text-xs text-rose-400/70 hover:text-rose-400 transition-colors"
+                      className="text-xs text-rose-400/60 hover:text-rose-400 transition-colors duration-300 font-medium"
                     >
                       Remove entry
                     </button>
@@ -482,28 +498,31 @@ function BuilderPageInner() {
               ))}
               <button
                 onClick={addProj}
-                className="text-xs text-violet-400 hover:text-violet-300 transition-colors font-medium"
+                className="flex items-center gap-1.5 text-xs text-violet-400 hover:text-violet-300 transition-colors duration-300 font-semibold px-1 py-1"
               >
-                + Add Project
+                <span className="w-4 h-4 flex items-center justify-center rounded bg-violet-500/10 text-[10px]">+</span>
+                Add Project
               </button>
             </div>
 
           </div>
         </div>
 
-        {/* ── RIGHT: LIVE PREVIEW ── */}
-        <div className="rounded-2xl overflow-y-auto shadow-xl flex flex-col" style={{ background: "#e2e8f0" }}>
+        {/* ═══ RIGHT: LIVE PREVIEW ═══ */}
+        <div className="relative rounded-2xl overflow-hidden flex flex-col border border-white/[0.06]" style={{ background: "linear-gradient(135deg, #e8ecf1, #dfe4ea, #e2e6ec)" }}>
+          {/* Subtle top accent */}
+          <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-indigo-400/30 to-transparent z-10" />
 
           {/* Template Switcher */}
-          <div className="flex gap-2 p-3 justify-center flex-shrink-0">
+          <div className="flex gap-2 p-4 justify-center flex-shrink-0 bg-white/30 backdrop-blur-sm border-b border-white/20">
             {(Object.keys(TEMPLATE_META) as TemplateKey[]).map((key) => (
               <button
                 key={key}
                 onClick={() => setTemplate(key)}
-                className={`px-4 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+                className={`px-5 py-2 rounded-lg text-xs font-semibold transition-all duration-300 ${
                   template === key
-                    ? "bg-violet-600 text-white shadow-md"
-                    : "bg-slate-700 text-slate-300 hover:bg-slate-600"
+                    ? "bg-gradient-to-r from-violet-600 to-indigo-600 text-white shadow-md shadow-violet-900/20"
+                    : "bg-white/50 text-slate-500 hover:bg-white/80 hover:text-slate-700"
                 }`}
               >
                 {TEMPLATE_META[key].label}
@@ -512,19 +531,21 @@ function BuilderPageInner() {
           </div>
 
           {/* Live Preview */}
-          <div className="flex-1 overflow-y-auto p-4">
+          <div className="flex-1 overflow-y-auto p-6">
             {isEmpty ? (
               <div className="flex flex-col items-center justify-center h-full text-center pt-20">
-                <div className="text-5xl mb-4">📄</div>
-                <p className="text-slate-400 text-sm font-medium">
+                <div className="w-20 h-20 flex items-center justify-center bg-white/60 rounded-2xl text-4xl mb-4 shadow-sm">
+                  📄
+                </div>
+                <p className="text-slate-500 text-sm font-semibold">
                   Your live preview will appear here
                 </p>
-                <p className="text-slate-500 text-xs mt-1">
+                <p className="text-slate-400 text-xs mt-1.5">
                   Start typing on the left to get started
                 </p>
               </div>
             ) : (
-              <div id="resume-preview">
+              <div id="resume-preview" className="shadow-2xl shadow-black/10 rounded-lg overflow-hidden">
                 {template === "classic" && <ClassicTemplate {...resumeData} />}
                 {template === "modern" && <ModernTemplate {...resumeData} />}
                 {template === "minimal" && <MinimalTemplate {...resumeData} />}
@@ -535,40 +556,52 @@ function BuilderPageInner() {
 
       </div>
 
-      {/* ── AI MODAL ── */}
+      {/* ═══ AI MODAL ═══ */}
       {aiModalOpen && (
-        <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 px-4">
-          <div className="bg-slate-900 border border-slate-700 rounded-2xl p-8 w-full max-w-lg">
-            <h2 className="text-xl font-bold mb-2">🤖 Generate Resume with AI</h2>
-            <p className="text-slate-400 text-sm mb-6">
-              Describe yourself — your skills, experience, and background. AI will fill in your resume automatically.
-            </p>
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 px-4">
+          <div className="relative bg-[#0d0d14] border border-white/[0.08] rounded-2xl p-8 w-full max-w-lg shadow-2xl shadow-violet-900/20 overflow-hidden">
+            {/* Top accent */}
+            <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-violet-500/50 to-transparent" />
+            {/* Background glow */}
+            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[300px] h-[200px] bg-violet-600/[0.06] blur-[60px] rounded-full pointer-events-none" />
 
-            <textarea
-              className="w-full bg-slate-800 border border-slate-700 rounded-xl p-4 text-sm text-white placeholder-slate-500 resize-none h-36 focus:outline-none focus:border-indigo-500"
-              placeholder="e.g. I'm a CS student skilled in React, Node.js and MongoDB. I built a resume builder SaaS as my portfolio project."
-              value={aiDescription}
-              onChange={(e) => setAiDescription(e.target.value)}
-            />
+            <div className="relative z-10">
+              <h2 className="text-xl font-extrabold mb-2 tracking-tight">
+                🤖 Generate with <span className="gradient-text">AI</span>
+              </h2>
+              <p className="text-slate-500 text-sm mb-6 leading-relaxed">
+                Describe yourself — your skills, experience, and background. AI will fill in your resume automatically.
+              </p>
 
-            {aiError && (
-              <p className="text-rose-400 text-xs mt-2">{aiError}</p>
-            )}
+              <textarea
+                className="w-full bg-white/[0.03] border border-white/[0.08] rounded-xl p-4 text-sm text-white placeholder-slate-600 resize-none h-36 focus:outline-none focus:border-violet-500/50 focus:ring-1 focus:ring-violet-500/20 transition-all duration-300"
+                placeholder="e.g. I'm a CS student skilled in React, Node.js and MongoDB. I built a resume builder SaaS as my portfolio project."
+                value={aiDescription}
+                onChange={(e) => setAiDescription(e.target.value)}
+              />
 
-            <div className="flex gap-3 mt-4">
-              <button
-                onClick={handleAiGenerate}
-                disabled={aiLoading || !aiDescription.trim()}
-                className="flex-1 py-3 bg-indigo-600 hover:bg-indigo-500 disabled:bg-indigo-800 disabled:cursor-not-allowed text-white rounded-xl font-semibold text-sm transition"
-              >
-                {aiLoading ? "✨ Generating..." : "✨ Generate Resume"}
-              </button>
-              <button
-                onClick={() => { setAiModalOpen(false); setAiDescription(""); setAiError(""); }}
-                className="px-6 py-3 bg-slate-800 hover:bg-slate-700 text-white rounded-xl text-sm transition"
-              >
-                Cancel
-              </button>
+              {aiError && (
+                <p className="text-rose-400 text-xs mt-2 font-medium">{aiError}</p>
+              )}
+
+              <div className="flex gap-3 mt-5">
+                <button
+                  onClick={handleAiGenerate}
+                  disabled={aiLoading || !aiDescription.trim()}
+                  className="relative flex-1 py-3.5 bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 disabled:from-violet-900 disabled:to-indigo-900 disabled:cursor-not-allowed text-white rounded-xl font-semibold text-sm transition-all duration-300 shadow-lg shadow-violet-900/30 overflow-hidden"
+                >
+                  <span className="relative z-10">
+                    {aiLoading ? "✨ Generating..." : "✨ Generate Resume"}
+                  </span>
+                  {!aiLoading && <div className="absolute inset-0 shimmer-btn" />}
+                </button>
+                <button
+                  onClick={() => { setAiModalOpen(false); setAiDescription(""); setAiError(""); }}
+                  className="px-6 py-3.5 bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] hover:border-white/[0.15] text-white rounded-xl text-sm font-medium transition-all duration-300"
+                >
+                  Cancel
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -581,7 +614,12 @@ function BuilderPageInner() {
 // ── Default export wraps inner component in Suspense ──
 export default function BuilderPage() {
   return (
-    <Suspense fallback={<div className="text-slate-400 p-8">Loading...</div>}>
+    <Suspense fallback={
+      <div className="h-full flex flex-col items-center justify-center gap-4">
+        <div className="w-10 h-10 border-2 border-violet-500/30 border-t-violet-500 rounded-full animate-spin" />
+        <p className="text-slate-500 text-sm font-medium">Loading builder...</p>
+      </div>
+    }>
       <BuilderPageInner />
     </Suspense>
   );
