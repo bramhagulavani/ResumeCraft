@@ -1,6 +1,6 @@
 import { ResumeData } from "./types";
 
-export default function ClassicTemplate({ name, email, summary, skills, experience, education, projects }: ResumeData) {
+export default function ClassicTemplate({ name, email, phone, linkedin, summary, skills, experience, education, projects }: ResumeData) {
   const hasExperience = experience.some((e) => e.role || e.company);
   const hasEducation = education.some((e) => e.college || e.degree);
   const hasProjects = projects.some((p) => p.title);
@@ -8,31 +8,29 @@ export default function ClassicTemplate({ name, email, summary, skills, experien
   return (
     <div className="bg-white text-gray-900 p-10 max-w-[800px] mx-auto" style={{ fontFamily: "'Georgia', 'Times New Roman', serif" }}>
 
-      {/* ═══ HEADER ═══ */}
+      {/* HEADER */}
       <div className="border-b-2 border-gray-800 pb-4 mb-6">
         <h1 className="text-3xl font-bold text-gray-900 tracking-tight leading-none">
           {name || "Your Name"}
         </h1>
-        {email && (
+        {(email || phone || linkedin) && (
           <p className="text-sm text-gray-500 mt-1.5" style={{ fontFamily: "system-ui, sans-serif" }}>
-            {email}
+            {[email, phone, linkedin].filter(Boolean).join(" · ")}
           </p>
         )}
       </div>
 
-      {/* ═══ SUMMARY ═══ */}
+      {/* SUMMARY */}
       {summary && (
         <div className="mb-5">
           <h2 className="text-[10px] font-bold tracking-[0.2em] uppercase text-gray-400 mb-2 pb-1 border-b border-gray-300" style={{ fontFamily: "system-ui, sans-serif" }}>
             Professional Summary
           </h2>
-          <p className="text-[13px] text-gray-700 leading-relaxed">
-            {summary}
-          </p>
+          <p className="text-[13px] text-gray-700 leading-relaxed">{summary}</p>
         </div>
       )}
 
-      {/* ═══ SKILLS ═══ */}
+      {/* SKILLS */}
       {skills.length > 0 && (
         <div className="mb-5">
           <h2 className="text-[10px] font-bold tracking-[0.2em] uppercase text-gray-400 mb-2.5 pb-1 border-b border-gray-300" style={{ fontFamily: "system-ui, sans-serif" }}>
@@ -52,7 +50,7 @@ export default function ClassicTemplate({ name, email, summary, skills, experien
         </div>
       )}
 
-      {/* ═══ EXPERIENCE ═══ */}
+      {/* EXPERIENCE */}
       {hasExperience && (
         <div className="mb-5">
           <h2 className="text-[10px] font-bold tracking-[0.2em] uppercase text-gray-400 mb-3 pb-1 border-b border-gray-300" style={{ fontFamily: "system-ui, sans-serif" }}>
@@ -83,7 +81,7 @@ export default function ClassicTemplate({ name, email, summary, skills, experien
         </div>
       )}
 
-      {/* ═══ EDUCATION ═══ */}
+      {/* EDUCATION */}
       {hasEducation && (
         <div className="mb-5">
           <h2 className="text-[10px] font-bold tracking-[0.2em] uppercase text-gray-400 mb-3 pb-1 border-b border-gray-300" style={{ fontFamily: "system-ui, sans-serif" }}>
@@ -94,7 +92,7 @@ export default function ClassicTemplate({ name, email, summary, skills, experien
               <div key={i} className="flex items-baseline justify-between">
                 <div>
                   <div className="font-bold text-gray-900 text-[14px]">{edu.degree}</div>
-                  <div className="text-gray-500 text-[12px] mt-0.5" style={{ fontFamily: "'system-ui', sans-serif" }}>
+                  <div className="text-gray-500 text-[12px] mt-0.5" style={{ fontFamily: "system-ui, sans-serif" }}>
                     {edu.college}
                   </div>
                 </div>
@@ -109,7 +107,7 @@ export default function ClassicTemplate({ name, email, summary, skills, experien
         </div>
       )}
 
-      {/* ═══ PROJECTS ═══ */}
+      {/* PROJECTS */}
       {hasProjects && (
         <div className="mb-5">
           <h2 className="text-[10px] font-bold tracking-[0.2em] uppercase text-gray-400 mb-3 pb-1 border-b border-gray-300" style={{ fontFamily: "system-ui, sans-serif" }}>

@@ -1,6 +1,6 @@
 import { ResumeData } from "./types";
 
-export default function MinimalTemplate({ name, email, summary, skills, experience, education, projects }: ResumeData) {
+export default function MinimalTemplate({ name, email, phone, linkedin, summary, skills, experience, education, projects }: ResumeData) {
   const hasExperience = experience.some((e) => e.role || e.company);
   const hasEducation = education.some((e) => e.college || e.degree);
   const hasProjects = projects.some((p) => p.title);
@@ -8,18 +8,20 @@ export default function MinimalTemplate({ name, email, summary, skills, experien
   return (
     <div className="bg-white text-gray-600 p-12 max-w-[800px] mx-auto" style={{ fontFamily: "'Helvetica Neue', 'Inter', Arial, sans-serif" }}>
 
-      {/* ═══ HEADER ═══ */}
+      {/* HEADER */}
       <div className="mb-10">
         <h1 className="text-4xl font-light text-gray-900 tracking-tight leading-none">
           {name || "Your Name"}
         </h1>
         <div className="w-8 h-px bg-gray-900 mt-3 mb-2.5" />
-        {email && (
-          <p className="text-[11px] text-gray-400 tracking-wider">{email}</p>
+        {(email || phone || linkedin) && (
+          <p className="text-[11px] text-gray-400 tracking-wider">
+            {[email, phone, linkedin].filter(Boolean).join(" · ")}
+          </p>
         )}
       </div>
 
-      {/* ═══ SUMMARY ═══ */}
+      {/* SUMMARY */}
       {summary && (
         <div className="mb-8 flex gap-6">
           <div className="w-20 flex-shrink-0 pt-0.5">
@@ -33,7 +35,7 @@ export default function MinimalTemplate({ name, email, summary, skills, experien
         </div>
       )}
 
-      {/* ═══ SKILLS ═══ */}
+      {/* SKILLS */}
       {skills.length > 0 && (
         <div className="mb-8 flex gap-6">
           <div className="w-20 flex-shrink-0 pt-0.5">
@@ -56,7 +58,7 @@ export default function MinimalTemplate({ name, email, summary, skills, experien
         </div>
       )}
 
-      {/* ═══ EXPERIENCE ═══ */}
+      {/* EXPERIENCE */}
       {hasExperience && (
         <div className="mb-8 flex gap-6">
           <div className="w-20 flex-shrink-0 pt-0.5">
@@ -84,7 +86,7 @@ export default function MinimalTemplate({ name, email, summary, skills, experien
         </div>
       )}
 
-      {/* ═══ EDUCATION ═══ */}
+      {/* EDUCATION */}
       {hasEducation && (
         <div className="mb-8 flex gap-6">
           <div className="w-20 flex-shrink-0 pt-0.5">
@@ -112,7 +114,7 @@ export default function MinimalTemplate({ name, email, summary, skills, experien
         </div>
       )}
 
-      {/* ═══ PROJECTS ═══ */}
+      {/* PROJECTS */}
       {hasProjects && (
         <div className="mb-8 flex gap-6">
           <div className="w-20 flex-shrink-0 pt-0.5">

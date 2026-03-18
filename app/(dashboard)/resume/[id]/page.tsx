@@ -12,7 +12,7 @@ const TEMPLATES = {
   classic: {
     wrapper: { background: "#ffffff", color: "#0f172a", fontFamily: "'Georgia', 'Times New Roman', serif", padding: "40px" },
     name: { fontSize: "28px", fontWeight: "bold", color: "#0f172a", letterSpacing: "-0.025em" },
-    email: { color: "#64748b", fontSize: "14px", marginTop: "6px", fontFamily: "system-ui, sans-serif" },
+    contactLine: { color: "#64748b", fontSize: "13px", marginTop: "6px", fontFamily: "system-ui, sans-serif" },
     divider: { borderBottom: "2px solid #1e293b", paddingBottom: "20px", marginBottom: "24px" },
     sectionTitle: { fontSize: "9px", fontWeight: "bold", letterSpacing: "0.25em", textTransform: "uppercase" as const, color: "#94a3b8", marginBottom: "10px", fontFamily: "system-ui, sans-serif" },
     bodyText: { color: "#374151", fontSize: "14px", lineHeight: 1.6 },
@@ -27,7 +27,7 @@ const TEMPLATES = {
   modern: {
     wrapper: { background: "#0f172a", color: "#f1f5f9", fontFamily: "system-ui, sans-serif", padding: "40px" },
     name: { fontSize: "28px", fontWeight: "bold", color: "#f1f5f9", letterSpacing: "-0.025em" },
-    email: { color: "#94a3b8", fontSize: "14px", marginTop: "6px", fontFamily: "system-ui, sans-serif" },
+    contactLine: { color: "#94a3b8", fontSize: "13px", marginTop: "6px", fontFamily: "system-ui, sans-serif" },
     divider: { borderBottom: "2px solid #334155", paddingBottom: "20px", marginBottom: "24px" },
     sectionTitle: { fontSize: "9px", fontWeight: "bold", letterSpacing: "0.25em", textTransform: "uppercase" as const, color: "#6366f1", marginBottom: "10px", fontFamily: "system-ui, sans-serif" },
     bodyText: { color: "#cbd5e1", fontSize: "14px", lineHeight: 1.6 },
@@ -42,7 +42,7 @@ const TEMPLATES = {
   minimal: {
     wrapper: { background: "#ffffff", color: "#374151", fontFamily: "'Helvetica Neue', Arial, sans-serif", padding: "40px" },
     name: { fontSize: "26px", fontWeight: "300", color: "#111827", letterSpacing: "0.05em" },
-    email: { color: "#9ca3af", fontSize: "13px", marginTop: "6px", fontFamily: "system-ui, sans-serif" },
+    contactLine: { color: "#9ca3af", fontSize: "12px", marginTop: "6px", fontFamily: "system-ui, sans-serif" },
     divider: { borderBottom: "1px solid #e5e7eb", paddingBottom: "16px", marginBottom: "24px" },
     sectionTitle: { fontSize: "10px", fontWeight: "600", letterSpacing: "0.2em", textTransform: "uppercase" as const, color: "#d1d5db", marginBottom: "10px", fontFamily: "system-ui, sans-serif" },
     bodyText: { color: "#6b7280", fontSize: "13px", lineHeight: 1.7 },
@@ -67,26 +67,41 @@ export default async function ResumeView({ params }: Props) {
 
   await connectToDatabase();
 
-  const resume = await Resume.findById(id).lean() as any;
+  const resume = await Resume.findById(id).lean() as {
+    _id: mongoose.Types.ObjectId;
+    name: string;
+    email?: string;
+    phone?: string;
+    linkedin?: string;
+    summary?: string;
+    skills?: string[];
+    experience?: { role: string; company: string; description: string }[];
+    education?: { degree: string; college: string; year: string }[];
+    projects?: { title: string; tech: string; description: string }[];
+    template?: string;
+  };
 
   if (!resume) {
     return <div className="p-10">Resume not found</div>;
   }
 
-  const resumeId = resume._id.toString(); // ✅ convert ObjectId to string for use in href
-  const templateKey: TemplateKey = (resume.template in TEMPLATES ? resume.template : "classic") as TemplateKey;
+  const resumeId = resume._id.toString();
+  const templateKey: TemplateKey = (resume.template && resume.template in TEMPLATES ? resume.template : "classic") as TemplateKey;
   const t = TEMPLATES[templateKey];
+
+  // ✅ Build contact line with phone and linkedin
+  const contactParts = [resume.email, resume.phone, resume.linkedin].filter(Boolean);
+  const contactLine = contactParts.join(" · ");
 
   return (
     <div className="min-h-screen py-10 px-4" style={{ background: "#e2e8f0" }}>
 
-      {/* ── Action bar — OUTSIDE the PDF capture area ── */}
+      {/* Action bar — outside PDF capture area */}
       <div className="max-w-3xl mx-auto mb-4 flex justify-between items-center">
         <div className="flex items-center gap-3">
           <span className="text-slate-500 text-sm capitalize">
             Template: <strong>{templateKey}</strong>
           </span>
-          {/* ✅ Edit button is here — outside id="resume-preview" so it won't appear in PDF */}
           <Link
             href={`/builder?id=${resumeId}`}
             className="px-4 py-1.5 bg-yellow-600 hover:bg-yellow-500 text-white rounded-lg text-sm font-semibold transition-all"
@@ -97,13 +112,15 @@ export default async function ResumeView({ params }: Props) {
         <ResumeDownloadButton name={resume.name} />
       </div>
 
-      {/* ✅ id="resume-preview" — only resume content here, no buttons */}
+      {/* Resume content — id="resume-preview" for PDF capture */}
       <div id="resume-preview" style={t.wrapper} className="max-w-3xl mx-auto rounded-lg shadow-lg">
 
-        {/* Header */}
+        {/* Header — now shows name + email + phone + linkedin */}
         <div style={t.divider}>
           <h1 style={t.name}>{resume.name}</h1>
-          <p style={t.email}>{resume.email}</p>
+          {contactLine && (
+            <p style={t.contactLine}>{contactLine}</p>
+          )}
         </div>
 
         {/* Summary */}
@@ -115,7 +132,7 @@ export default async function ResumeView({ params }: Props) {
         )}
 
         {/* Skills */}
-        {resume.skills?.length > 0 && (
+        {resume.skills && resume.skills.length > 0 && (
           <div style={{ marginBottom: "24px" }}>
             <h2 style={t.sectionTitle}>Skills</h2>
             <div style={{ display: "flex", flexWrap: "wrap", gap: "6px" }}>
@@ -127,10 +144,10 @@ export default async function ResumeView({ params }: Props) {
         )}
 
         {/* Experience */}
-        {resume.experience?.length > 0 && (
+        {resume.experience && resume.experience.length > 0 && (
           <div style={{ marginBottom: "24px" }}>
             <h2 style={t.sectionTitle}>Experience</h2>
-            {resume.experience.map((exp: any, i: number) => (
+            {resume.experience.map((exp, i: number) => (
               <div key={i} style={{ marginBottom: "16px" }}>
                 <div style={{ display: "flex", alignItems: "baseline", gap: "6px" }}>
                   <span style={t.roleText}>{exp.role}</span>
@@ -146,10 +163,10 @@ export default async function ResumeView({ params }: Props) {
         )}
 
         {/* Education */}
-        {resume.education?.length > 0 && (
+        {resume.education && resume.education.length > 0 && (
           <div style={{ marginBottom: "24px" }}>
             <h2 style={t.sectionTitle}>Education</h2>
-            {resume.education.map((edu: any, i: number) => (
+            {resume.education.map((edu, i: number) => (
               <div key={i} style={{ marginBottom: "12px" }}>
                 <div style={t.roleText}>{edu.degree}</div>
                 <div style={{ ...t.companyText, fontFamily: "system-ui, sans-serif" }}>
@@ -162,10 +179,10 @@ export default async function ResumeView({ params }: Props) {
         )}
 
         {/* Projects */}
-        {resume.projects?.length > 0 && (
+        {resume.projects && resume.projects.length > 0 && (
           <div style={{ marginBottom: "24px" }}>
             <h2 style={t.sectionTitle}>Projects</h2>
-            {resume.projects.map((proj: any, i: number) => (
+            {resume.projects.map((proj, i: number) => (
               <div key={i} style={{ marginBottom: "16px" }}>
                 <div style={{ display: "flex", alignItems: "baseline", gap: "8px", flexWrap: "wrap" }}>
                   <span style={t.roleText}>{proj.title}</span>

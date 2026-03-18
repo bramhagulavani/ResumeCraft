@@ -21,7 +21,7 @@ export function useTheme() {
 export default function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [theme, setTheme] = useState<Theme>("dark");
   const [mounted, setMounted] = useState(false);
-
+   
   useEffect(() => {
     const stored = localStorage.getItem("resumecraft-theme") as Theme | null;
     const initial = stored || "dark";

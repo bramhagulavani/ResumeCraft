@@ -1,6 +1,6 @@
 import { ResumeData } from "./types";
 
-export default function ModernTemplate({ name, email, summary, skills, experience, education, projects }: ResumeData) {
+export default function ModernTemplate({ name, email, phone, linkedin, summary, skills, experience, education, projects }: ResumeData) {
   const hasExperience = experience.some((e) => e.role || e.company);
   const hasEducation = education.some((e) => e.college || e.degree);
   const hasProjects = projects.some((p) => p.title);
@@ -8,22 +8,29 @@ export default function ModernTemplate({ name, email, summary, skills, experienc
   return (
     <div className="flex bg-white max-w-[800px] mx-auto min-h-[500px]" style={{ fontFamily: "system-ui, -apple-system, sans-serif" }}>
 
-      {/* ═══ LEFT SIDEBAR ═══ */}
+      {/* LEFT SIDEBAR */}
       <div className="w-[220px] flex-shrink-0 bg-slate-800 text-white p-6 flex flex-col gap-6">
 
-        {/* Name & Email */}
+        {/* Name & Contact */}
         <div>
           <h1 className="text-lg font-bold text-white leading-tight tracking-tight">
             {name || "Your Name"}
           </h1>
           {email && (
-            <p className="text-indigo-300 text-[11px] mt-2 break-all leading-relaxed">
-              {email}
+            <p className="text-indigo-300 text-[11px] mt-2 break-all leading-relaxed">{email}</p>
+          )}
+          {phone && (
+            <p className="text-slate-300 text-[11px] mt-1 flex items-center gap-1.5">
+              <span>📞</span>{phone}
+            </p>
+          )}
+          {linkedin && (
+            <p className="text-slate-300 text-[11px] mt-1 flex items-center gap-1.5 break-all">
+              <span>🔗</span>{linkedin}
             </p>
           )}
         </div>
 
-        {/* Sidebar Divider */}
         <div className="w-8 h-px bg-slate-600" />
 
         {/* Skills */}
@@ -43,7 +50,7 @@ export default function ModernTemplate({ name, email, summary, skills, experienc
           </div>
         )}
 
-        {/* Education */}
+        {/* Education in sidebar */}
         {hasEducation && (
           <div>
             <h2 className="text-[9px] font-bold tracking-[0.2em] uppercase text-indigo-400 mb-3">
@@ -64,7 +71,7 @@ export default function ModernTemplate({ name, email, summary, skills, experienc
         )}
       </div>
 
-      {/* ═══ MAIN CONTENT ═══ */}
+      {/* MAIN CONTENT */}
       <div className="flex-1 p-7 flex flex-col gap-5">
 
         {/* Summary */}

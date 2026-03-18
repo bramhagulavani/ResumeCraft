@@ -22,10 +22,12 @@ const ResumeSchema = new Schema(
   {
     userId: {
       type: String,
-      required: true,  // every resume must belong to a user
+      required: true,
     },
     name: { type: String, required: true },
     email: String,
+    phone: { type: String, default: "" },
+    linkedin: { type: String, default: "" },
     summary: String,
     skills: [String],
     experience: [ExperienceSchema],
