@@ -16,7 +16,7 @@ export async function POST(req: Request) {
 
     const apiKey = process.env.OPENROUTER_API_KEY;
     if (!apiKey) {
-      return NextResponse.json({ message: "AI service not configured" }, { status: 500 });
+      return NextResponse.json({ message: "AI service not configured. Please set OPENROUTER_API_KEY." }, { status: 500 });
     }
 
     const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
@@ -26,13 +26,11 @@ export async function POST(req: Request) {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        // ✅ Fixed: removed trailing space from model name
         model: "meta-llama/llama-3.2-3b-instruct:free",
         messages: [
           {
             role: "system",
-            content: `You are a professional resume writer. Given a user's description, generate resume content in JSON format only. No explanation, no markdown, no extra text, just raw JSON.
-Return exactly this structure:
+            content: `You are a professional resume writer. Given a user's description, return ONLY raw JSON with no explanation, no markdown, no code fences, no extra text whatsoever. Return exactly this JSON structure:
 {
   "summary": "2-3 sentence professional summary",
   "skills": ["skill1", "skill2", "skill3", "skill4", "skill5"],
@@ -43,7 +41,8 @@ Return exactly this structure:
       "description": "What you did there in 1-2 sentences"
     }
   ]
-}`,
+}
+Return ONLY the JSON object. Do not wrap it in markdown. Do not add any text before or after. Do not use code fences.`,
           },
           {
             role: "user",
@@ -54,29 +53,42 @@ Return exactly this structure:
     });
 
     if (!response.ok) {
-      return NextResponse.json({ message: "AI service error" }, { status: 500 });
+      const status = response.status;
+      if (status === 429) {
+        return NextResponse.json({ message: "AI rate limit exceeded. Please try again in a moment." }, { status: 429 });
+      }
+      if (status === 401 || status === 403) {
+        return NextResponse.json({ message: "AI service authentication failed. Check your API key." }, { status: 500 });
+      }
+      return NextResponse.json({ message: `AI service returned error (${status}). Please try again.` }, { status: 500 });
     }
 
     const data = await response.json();
     let content = data.choices?.[0]?.message?.content;
 
     if (!content) {
-      return NextResponse.json({ message: "AI returned empty response" }, { status: 500 });
+      return NextResponse.json({ message: "AI returned an empty response. Please try again." }, { status: 500 });
     }
 
-    // ✅ Fixed: strip <think>...</think> tags that Llama models sometimes add
-    content = content.replace(/<think>[\s\S]*?<\/think>/g, "").trim();
+    // Strip <think>...</think> tags (including multiline)
+    content = content.replace(/<think>[\s\S]*?<\/think>/gi, "").trim();
 
-    // ✅ Clean markdown fences if present
-    content = content.replace(/```json|```/g, "").trim();
+    // Strip markdown code fences in all variations
+    content = content.replace(/```json\s*/gi, "").replace(/```\s*/g, "").trim();
+
+    // Try to extract JSON object if there's extra text around it
+    const jsonMatch = content.match(/\{[\s\S]*\}/);
+    if (jsonMatch) {
+      content = jsonMatch[0];
+    }
 
     const parsed = JSON.parse(content);
     return NextResponse.json(parsed, { status: 200 });
 
   } catch (error: unknown) {
     if (error instanceof SyntaxError) {
-      return NextResponse.json({ message: "AI response was not valid JSON" }, { status: 500 });
+      return NextResponse.json({ message: "AI response was not valid JSON. Please try again." }, { status: 500 });
     }
-    return NextResponse.json({ message: "AI generation failed" }, { status: 500 });
+    return NextResponse.json({ message: "AI generation failed unexpectedly. Please try again." }, { status: 500 });
   }
 }

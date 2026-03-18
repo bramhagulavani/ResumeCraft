@@ -10,7 +10,7 @@ export default function MinimalTemplate({ name, email, summary, skills, experien
 
       {/* ═══ HEADER ═══ */}
       <div className="mb-10">
-        <h1 className="text-4xl font-light text-gray-900 tracking-widest uppercase leading-none">
+        <h1 className="text-4xl font-light text-gray-900 tracking-tight leading-none">
           {name || "Your Name"}
         </h1>
         <div className="w-8 h-px bg-gray-900 mt-3 mb-2.5" />
@@ -23,7 +23,7 @@ export default function MinimalTemplate({ name, email, summary, skills, experien
       {summary && (
         <div className="mb-8 flex gap-6">
           <div className="w-20 flex-shrink-0 pt-0.5">
-            <span className="text-[9px] font-semibold tracking-[0.2em] uppercase text-gray-300">
+            <span className="text-[9px] font-semibold tracking-[0.3em] uppercase text-gray-400">
               About
             </span>
           </div>
@@ -37,7 +37,7 @@ export default function MinimalTemplate({ name, email, summary, skills, experien
       {skills.length > 0 && (
         <div className="mb-8 flex gap-6">
           <div className="w-20 flex-shrink-0 pt-0.5">
-            <span className="text-[9px] font-semibold tracking-[0.2em] uppercase text-gray-300">
+            <span className="text-[9px] font-semibold tracking-[0.3em] uppercase text-gray-400">
               Skills
             </span>
           </div>
@@ -60,7 +60,7 @@ export default function MinimalTemplate({ name, email, summary, skills, experien
       {hasExperience && (
         <div className="mb-8 flex gap-6">
           <div className="w-20 flex-shrink-0 pt-0.5">
-            <span className="text-[9px] font-semibold tracking-[0.2em] uppercase text-gray-300">
+            <span className="text-[9px] font-semibold tracking-[0.3em] uppercase text-gray-400">
               Work
             </span>
           </div>
@@ -88,7 +88,7 @@ export default function MinimalTemplate({ name, email, summary, skills, experien
       {hasEducation && (
         <div className="mb-8 flex gap-6">
           <div className="w-20 flex-shrink-0 pt-0.5">
-            <span className="text-[9px] font-semibold tracking-[0.2em] uppercase text-gray-300">
+            <span className="text-[9px] font-semibold tracking-[0.3em] uppercase text-gray-400">
               Education
             </span>
           </div>
@@ -116,7 +116,7 @@ export default function MinimalTemplate({ name, email, summary, skills, experien
       {hasProjects && (
         <div className="mb-8 flex gap-6">
           <div className="w-20 flex-shrink-0 pt-0.5">
-            <span className="text-[9px] font-semibold tracking-[0.2em] uppercase text-gray-300">
+            <span className="text-[9px] font-semibold tracking-[0.3em] uppercase text-gray-400">
               Projects
             </span>
           </div>

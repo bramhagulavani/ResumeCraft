@@ -63,8 +63,8 @@ export default function DashboardPage() {
   return (
     <div className="relative">
 
-      {/* ═══ Ambient Glow ═══ */}
-      <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-violet-600/[0.04] blur-[100px] rounded-full pointer-events-none" />
+      {/* ═══ Ambient Glow (dark only) ═══ */}
+      <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-violet-600/[0.04] blur-[100px] rounded-full pointer-events-none dark:opacity-100 opacity-0 transition-opacity duration-500" />
 
       {/* ═══ Page Header ═══ */}
       <div className="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 mb-10">
@@ -72,7 +72,7 @@ export default function DashboardPage() {
           <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight">
             My <span className="gradient-text">Resumes</span>
           </h1>
-          <p className="text-slate-500 text-sm mt-1.5">Manage and organize all your resumes in one place.</p>
+          <p className="text-gray-500 dark:text-slate-500 text-sm mt-1.5">Manage and organize all your resumes in one place.</p>
         </div>
         <button
           onClick={() => router.push("/builder")}
@@ -93,14 +93,14 @@ export default function DashboardPage() {
           ].map((stat, i) => (
             <div
               key={i}
-              className="flex items-center gap-4 px-5 py-4 bg-white/[0.02] border border-white/[0.06] rounded-xl backdrop-blur-sm"
+              className="flex items-center gap-4 px-5 py-4 bg-white dark:bg-white/[0.02] border border-gray-200 dark:border-white/[0.06] rounded-xl backdrop-blur-sm shadow-sm dark:shadow-none transition-colors duration-300"
             >
-              <div className="w-10 h-10 flex items-center justify-center bg-violet-500/[0.08] rounded-lg text-lg">
+              <div className="w-10 h-10 flex items-center justify-center bg-violet-100 dark:bg-violet-500/[0.08] rounded-lg text-lg">
                 {stat.icon}
               </div>
               <div>
-                <div className="text-white font-bold text-lg leading-tight">{stat.value}</div>
-                <div className="text-slate-500 text-xs font-medium">{stat.label}</div>
+                <div className="font-bold text-lg leading-tight">{stat.value}</div>
+                <div className="text-gray-500 dark:text-slate-500 text-xs font-medium">{stat.label}</div>
               </div>
             </div>
           ))}
@@ -113,19 +113,19 @@ export default function DashboardPage() {
           /* Loading State */
           <div className="flex flex-col items-center justify-center py-32">
             <div className="w-10 h-10 border-2 border-violet-500/30 border-t-violet-500 rounded-full animate-spin mb-4" />
-            <p className="text-slate-500 text-sm font-medium">Loading your resumes...</p>
+            <p className="text-gray-500 dark:text-slate-500 text-sm font-medium">Loading your resumes...</p>
           </div>
         ) : resumes.length === 0 ? (
           /* Empty State */
           <div className="flex flex-col items-center justify-center py-24 text-center">
             <div className="relative mb-6">
               <div className="absolute inset-0 bg-violet-600/10 blur-[40px] rounded-full" />
-              <div className="relative w-24 h-24 flex items-center justify-center bg-white/[0.03] border border-white/[0.06] rounded-3xl text-5xl">
+              <div className="relative w-24 h-24 flex items-center justify-center bg-gray-50 dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-3xl text-5xl transition-colors duration-300">
                 📄
               </div>
             </div>
-            <h3 className="text-white text-xl font-bold mb-2">No resumes yet</h3>
-            <p className="text-slate-500 text-sm max-w-sm mb-8 leading-relaxed">
+            <h3 className="text-xl font-bold mb-2">No resumes yet</h3>
+            <p className="text-gray-500 dark:text-slate-500 text-sm max-w-sm mb-8 leading-relaxed">
               Create your first professional resume and it will appear here. Get started in minutes with our AI-powered builder.
             </p>
             <button
@@ -142,7 +142,7 @@ export default function DashboardPage() {
             {resumes.map((resume) => (
               <div
                 key={resume._id}
-                className="group relative bg-white/[0.02] border border-white/[0.06] hover:border-violet-500/30 rounded-2xl p-6 transition-all duration-500 hover:scale-[1.02] hover:-translate-y-1 hover:shadow-xl hover:shadow-violet-900/10 overflow-hidden"
+                className="group relative bg-white dark:bg-white/[0.02] border border-gray-200 dark:border-white/[0.06] hover:border-violet-500/30 rounded-2xl p-6 transition-all duration-500 hover:scale-[1.02] hover:-translate-y-1 hover:shadow-xl hover:shadow-violet-900/10 overflow-hidden shadow-sm dark:shadow-none"
               >
                 {/* Hover gradient overlay */}
                 <div className="absolute inset-0 bg-gradient-to-br from-violet-500/[0.03] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-2xl" />
@@ -151,23 +151,23 @@ export default function DashboardPage() {
                   {/* Name & Email */}
                   <div className="flex items-start justify-between mb-3">
                     <div>
-                      <h2 className="text-lg font-bold text-white group-hover:text-violet-200 transition-colors duration-300 tracking-tight">
+                      <h2 className="text-lg font-bold group-hover:text-violet-600 dark:group-hover:text-violet-200 transition-colors duration-300 tracking-tight">
                         {resume.name}
                       </h2>
-                      <p className="text-slate-500 text-xs font-medium mt-0.5">{resume.email}</p>
+                      <p className="text-gray-500 dark:text-slate-500 text-xs font-medium mt-0.5">{resume.email}</p>
                     </div>
-                    <div className="w-8 h-8 flex items-center justify-center bg-violet-500/[0.08] rounded-lg text-sm opacity-0 group-hover:opacity-100 transition-all duration-300">
+                    <div className="w-8 h-8 flex items-center justify-center bg-violet-100 dark:bg-violet-500/[0.08] rounded-lg text-sm opacity-0 group-hover:opacity-100 transition-all duration-300">
                       📄
                     </div>
                   </div>
 
                   {/* Summary */}
-                  <p className="text-slate-400 text-sm line-clamp-3 leading-relaxed mb-4">
+                  <p className="text-gray-500 dark:text-slate-400 text-sm line-clamp-3 leading-relaxed mb-4">
                     {resume.summary || "No summary added."}
                   </p>
 
                   {/* Date */}
-                  <div className="flex items-center gap-1.5 text-xs text-slate-600 mb-5">
+                  <div className="flex items-center gap-1.5 text-xs text-gray-400 dark:text-slate-600 mb-5">
                     <span>🕐</span>
                     <span>Created {new Date(resume.createdAt).toLocaleDateString()}</span>
                   </div>
@@ -176,20 +176,20 @@ export default function DashboardPage() {
                   <div className="flex gap-2">
                     <button
                       onClick={() => router.push(`/resume/${resume._id}`)}
-                      className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 bg-violet-600/10 hover:bg-violet-600/20 border border-violet-500/20 hover:border-violet-500/40 text-violet-400 hover:text-violet-300 rounded-lg text-xs font-semibold transition-all duration-300"
+                      className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 bg-indigo-50 dark:bg-violet-600/10 hover:bg-indigo-100 dark:hover:bg-violet-600/20 border border-indigo-200 dark:border-violet-500/20 hover:border-indigo-300 dark:hover:border-violet-500/40 text-indigo-600 dark:text-violet-400 hover:text-indigo-700 dark:hover:text-violet-300 rounded-lg text-xs font-semibold transition-all duration-300"
                     >
                       <span>👁</span> View
                     </button>
                     <button
                       onClick={() => router.push(`/builder?id=${resume._id}`)}
-                      className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 bg-amber-600/10 hover:bg-amber-600/20 border border-amber-500/20 hover:border-amber-500/40 text-amber-400 hover:text-amber-300 rounded-lg text-xs font-semibold transition-all duration-300"
+                      className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 bg-amber-50 dark:bg-amber-600/10 hover:bg-amber-100 dark:hover:bg-amber-600/20 border border-amber-200 dark:border-amber-500/20 hover:border-amber-300 dark:hover:border-amber-500/40 text-amber-600 dark:text-amber-400 hover:text-amber-700 dark:hover:text-amber-300 rounded-lg text-xs font-semibold transition-all duration-300"
                     >
                       <span>✏️</span> Edit
                     </button>
                     <button
                       onClick={() => deleteResume(resume._id)}
                       disabled={deletingId === resume._id}
-                      className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 bg-rose-600/10 hover:bg-rose-600/20 border border-rose-500/20 hover:border-rose-500/40 text-rose-400 hover:text-rose-300 rounded-lg text-xs font-semibold transition-all duration-300 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-rose-600/10 disabled:hover:text-rose-400"
+                      className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 bg-rose-50 dark:bg-rose-600/10 hover:bg-rose-100 dark:hover:bg-rose-600/20 border border-rose-200 dark:border-rose-500/20 hover:border-rose-300 dark:hover:border-rose-500/40 text-rose-600 dark:text-rose-400 hover:text-rose-700 dark:hover:text-rose-300 rounded-lg text-xs font-semibold transition-all duration-300 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-rose-50 dark:disabled:hover:bg-rose-600/10 disabled:hover:text-rose-600 dark:disabled:hover:text-rose-400"
                     >
                       <span>🗑</span> {deletingId === resume._id ? "..." : "Delete"}
                     </button>

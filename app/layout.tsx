@@ -1,5 +1,6 @@
 import "./globals.css";
 import { ClerkProvider } from "@clerk/nextjs";
+import ThemeProvider from "@/components/ThemeProvider";
 
 export const metadata = {
   title: "ResumeCraft",
@@ -13,9 +14,11 @@ export default function RootLayout({
 }) {
   return (
     <ClerkProvider>
-      <html lang="en">
-        <body className="bg-slate-950 text-white">
-          {children}
+      <html lang="en" className="dark">
+        <body className="bg-[#fafafa] dark:bg-[#0a0a0f] text-[#0f172a] dark:text-white transition-colors duration-300">
+          <ThemeProvider>
+            {children}
+          </ThemeProvider>
         </body>
       </html>
     </ClerkProvider>

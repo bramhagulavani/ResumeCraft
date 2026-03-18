@@ -35,7 +35,7 @@ export default function ModernTemplate({ name, email, summary, skills, experienc
             <div className="flex flex-col gap-1.5">
               {skills.map((skill, i) => (
                 <div key={i} className="flex items-center gap-2">
-                  <div className="w-1 h-1 rounded-full bg-indigo-400 flex-shrink-0" />
+                  <div className="w-1.5 h-1.5 rounded-full bg-violet-400 flex-shrink-0" />
                   <span className="text-[11px] text-slate-300 leading-tight">{skill}</span>
                 </div>
               ))}
@@ -71,7 +71,7 @@ export default function ModernTemplate({ name, email, summary, skills, experienc
         {summary && (
           <div>
             <h2 className="text-[10px] font-bold tracking-[0.15em] uppercase text-indigo-600 mb-2 pb-1.5 border-b border-gray-200 flex items-center gap-2">
-              <span className="w-1 h-3.5 bg-indigo-500 rounded-full inline-block" />
+              <span className="w-1 h-3.5 bg-violet-500 rounded-full inline-block" />
               Profile
             </h2>
             <p className="text-gray-600 text-[13px] leading-relaxed">{summary}</p>
@@ -82,12 +82,12 @@ export default function ModernTemplate({ name, email, summary, skills, experienc
         {hasExperience && (
           <div>
             <h2 className="text-[10px] font-bold tracking-[0.15em] uppercase text-indigo-600 mb-3 pb-1.5 border-b border-gray-200 flex items-center gap-2">
-              <span className="w-1 h-3.5 bg-indigo-500 rounded-full inline-block" />
+              <span className="w-1 h-3.5 bg-violet-500 rounded-full inline-block" />
               Experience
             </h2>
             <div className="space-y-4">
               {experience.filter((e) => e.role || e.company).map((exp, i) => (
-                <div key={i} className="pl-3 border-l-2 border-indigo-100">
+                <div key={i} className="pl-3 border-l-4 border-violet-500">
                   <div className="font-bold text-gray-900 text-[13px]">{exp.role}</div>
                   {exp.company && (
                     <div className="text-indigo-500 text-[11px] mt-0.5 font-medium">{exp.company}</div>
@@ -107,12 +107,12 @@ export default function ModernTemplate({ name, email, summary, skills, experienc
         {hasProjects && (
           <div>
             <h2 className="text-[10px] font-bold tracking-[0.15em] uppercase text-indigo-600 mb-3 pb-1.5 border-b border-gray-200 flex items-center gap-2">
-              <span className="w-1 h-3.5 bg-indigo-500 rounded-full inline-block" />
+              <span className="w-1 h-3.5 bg-violet-500 rounded-full inline-block" />
               Projects
             </h2>
             <div className="space-y-4">
               {projects.filter((p) => p.title).map((proj, i) => (
-                <div key={i} className="pl-3 border-l-2 border-gray-100">
+                <div key={i} className="pl-3 border-l-4 border-violet-500">
                   <div className="flex items-baseline gap-2 flex-wrap">
                     <span className="font-bold text-gray-900 text-[13px]">{proj.title}</span>
                   </div>

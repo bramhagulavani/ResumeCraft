@@ -18,6 +18,11 @@
 }
 
 :root {
+  --background: #fafafa;
+  --foreground: #0f172a;
+}
+
+.dark {
   --background: #0a0a0f;
   --foreground: #ededed;
 }
@@ -26,6 +31,7 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 /* Smooth scrolling */
@@ -33,19 +39,34 @@ html {
   scroll-behavior: smooth;
 }
 
-/* Custom scrollbar */
+/* Custom scrollbar — dark mode */
+.dark ::-webkit-scrollbar {
+  width: 6px;
+}
+.dark ::-webkit-scrollbar-track {
+  background: #0a0a0f;
+}
+.dark ::-webkit-scrollbar-thumb {
+  background: #2a2a3a;
+  border-radius: 3px;
+}
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: #3a3a5a;
+}
+
+/* Custom scrollbar — light mode */
 ::-webkit-scrollbar {
   width: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: #0a0a0f;
+  background: #f1f5f9;
 }
 ::-webkit-scrollbar-thumb {
-  background: #2a2a3a;
+  background: #cbd5e1;
   border-radius: 3px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #3a3a5a;
+  background: #94a3b8;
 }
 
 /* Keyframes */

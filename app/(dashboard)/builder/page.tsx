@@ -16,7 +16,7 @@ const TEMPLATE_META: Record<TemplateKey, { label: string }> = {
 };
 
 const SectionHeader = ({ children }: { children: React.ReactNode }) => (
-  <h3 className="flex items-center gap-2 text-[11px] font-bold tracking-[0.2em] uppercase text-slate-400 mb-3 mt-8 first:mt-0">
+  <h3 className="flex items-center gap-2 text-[11px] font-bold tracking-[0.2em] uppercase text-gray-400 dark:text-slate-400 mb-3 mt-8 first:mt-0">
     <span className="w-1 h-4 bg-gradient-to-b from-violet-500 to-indigo-500 rounded-full" />
     {children}
   </h3>
@@ -38,7 +38,7 @@ const FormInput = ({
     placeholder={placeholder}
     value={value}
     onChange={(e) => onChange(e.target.value)}
-    className="w-full px-4 py-2.5 rounded-xl bg-white/[0.03] border border-white/[0.06] text-slate-100 placeholder-slate-600 text-sm focus:outline-none focus:border-violet-500/50 focus:ring-1 focus:ring-violet-500/20 focus:bg-white/[0.05] transition-all duration-300"
+    className="w-full px-4 py-2.5 rounded-xl bg-gray-50 dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] text-gray-900 dark:text-slate-100 placeholder-gray-400 dark:placeholder-slate-600 text-sm focus:outline-none focus:border-violet-500/50 focus:ring-1 focus:ring-violet-500/20 focus:bg-white dark:focus:bg-white/[0.05] transition-all duration-300"
   />
 );
 
@@ -58,7 +58,7 @@ const FormTextarea = ({
     value={value}
     rows={rows}
     onChange={(e) => onChange(e.target.value)}
-    className="w-full px-4 py-2.5 rounded-xl bg-white/[0.03] border border-white/[0.06] text-slate-100 placeholder-slate-600 text-sm focus:outline-none focus:border-violet-500/50 focus:ring-1 focus:ring-violet-500/20 focus:bg-white/[0.05] transition-all duration-300 resize-none"
+    className="w-full px-4 py-2.5 rounded-xl bg-gray-50 dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] text-gray-900 dark:text-slate-100 placeholder-gray-400 dark:placeholder-slate-600 text-sm focus:outline-none focus:border-violet-500/50 focus:ring-1 focus:ring-violet-500/20 focus:bg-white dark:focus:bg-white/[0.05] transition-all duration-300 resize-none"
   />
 );
 
@@ -302,7 +302,7 @@ function BuilderPageInner() {
     return (
       <div className="h-full flex flex-col items-center justify-center gap-4">
         <div className="w-10 h-10 border-2 border-violet-500/30 border-t-violet-500 rounded-full animate-spin" />
-        <p className="text-slate-500 text-sm font-medium">Loading resume...</p>
+        <p className="text-gray-500 dark:text-slate-500 text-sm font-medium">Loading resume...</p>
       </div>
     );
   }
@@ -317,7 +317,7 @@ function BuilderPageInner() {
             {resumeId ? "Edit " : ""}Resume <span className="gradient-text">Builder</span>
           </h1>
           {resumeId && (
-            <p className="text-xs text-slate-600 mt-1 flex items-center gap-1.5">
+            <p className="text-xs text-gray-400 dark:text-slate-600 mt-1 flex items-center gap-1.5">
               <span className="w-1.5 h-1.5 rounded-full bg-amber-500" />
               Editing existing resume
             </p>
@@ -327,7 +327,7 @@ function BuilderPageInner() {
           <button
             onClick={downloadPDF}
             disabled={downloading || isEmpty}
-            className="flex items-center gap-2 px-5 py-2.5 bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] hover:border-white/[0.15] disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:bg-white/[0.04] rounded-xl text-sm font-semibold transition-all duration-300 text-slate-300 hover:text-white"
+            className="flex items-center gap-2 px-5 py-2.5 bg-gray-100 dark:bg-white/[0.04] hover:bg-gray-200 dark:hover:bg-white/[0.08] border border-gray-200 dark:border-white/[0.08] hover:border-gray-300 dark:hover:border-white/[0.15] disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:bg-gray-100 dark:disabled:hover:bg-white/[0.04] rounded-xl text-sm font-semibold transition-all duration-300 text-gray-600 dark:text-slate-300 hover:text-gray-900 dark:hover:text-white"
           >
             <span>⬇</span>
             {downloading ? "Generating..." : "Download PDF"}
@@ -346,7 +346,7 @@ function BuilderPageInner() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 flex-1 min-h-0">
 
         {/* ═══ LEFT: FORM PANEL ═══ */}
-        <div className="relative bg-white/[0.02] rounded-2xl border border-white/[0.06] overflow-y-auto">
+        <div className="relative bg-white dark:bg-white/[0.02] rounded-2xl border border-gray-200 dark:border-white/[0.06] overflow-y-auto shadow-sm dark:shadow-none transition-colors duration-300">
           {/* Subtle top accent */}
           <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-violet-500/30 to-transparent" />
 
@@ -389,7 +389,7 @@ function BuilderPageInner() {
                   {skills.length > 1 && (
                     <button
                       onClick={() => removeSkill(i)}
-                      className="w-8 h-8 flex items-center justify-center rounded-lg bg-rose-500/[0.06] hover:bg-rose-500/[0.15] border border-rose-500/10 hover:border-rose-500/30 text-rose-400 hover:text-rose-300 transition-all duration-300 text-sm leading-none flex-shrink-0"
+                      className="w-8 h-8 flex items-center justify-center rounded-lg bg-rose-50 dark:bg-rose-500/[0.06] hover:bg-rose-100 dark:hover:bg-rose-500/[0.15] border border-rose-200 dark:border-rose-500/10 hover:border-rose-300 dark:hover:border-rose-500/30 text-rose-500 dark:text-rose-400 hover:text-rose-600 dark:hover:text-rose-300 transition-all duration-300 text-sm leading-none flex-shrink-0"
                     >
                       ×
                     </button>
@@ -398,9 +398,9 @@ function BuilderPageInner() {
               ))}
               <button
                 onClick={addSkill}
-                className="flex items-center gap-1.5 text-xs text-violet-400 hover:text-violet-300 transition-colors duration-300 font-semibold px-1 py-1"
+                className="flex items-center gap-1.5 text-xs text-violet-600 dark:text-violet-400 hover:text-violet-700 dark:hover:text-violet-300 transition-colors duration-300 font-semibold px-1 py-1"
               >
-                <span className="w-4 h-4 flex items-center justify-center rounded bg-violet-500/10 text-[10px]">+</span>
+                <span className="w-4 h-4 flex items-center justify-center rounded bg-violet-100 dark:bg-violet-500/10 text-[10px]">+</span>
                 Add Skill
               </button>
             </div>
@@ -408,7 +408,7 @@ function BuilderPageInner() {
             <SectionHeader>Experience</SectionHeader>
             <div className="space-y-3">
               {experience.map((exp, i) => (
-                <div key={i} className="bg-white/[0.02] border border-white/[0.05] rounded-xl p-4 space-y-2.5">
+                <div key={i} className="bg-gray-50 dark:bg-white/[0.02] border border-gray-100 dark:border-white/[0.05] rounded-xl p-4 space-y-2.5 transition-colors duration-300">
                   <div className="grid grid-cols-2 gap-2.5">
                     <FormInput placeholder="Role / Position" value={exp.role} onChange={(v) => handleExpChange(i, "role", v)} />
                     <FormInput placeholder="Company" value={exp.company} onChange={(v) => handleExpChange(i, "company", v)} />
@@ -422,7 +422,7 @@ function BuilderPageInner() {
                   {experience.length > 1 && (
                     <button
                       onClick={() => removeExp(i)}
-                      className="text-xs text-rose-400/60 hover:text-rose-400 transition-colors duration-300 font-medium"
+                      className="text-xs text-rose-400/60 hover:text-rose-500 dark:hover:text-rose-400 transition-colors duration-300 font-medium"
                     >
                       Remove entry
                     </button>
@@ -431,9 +431,9 @@ function BuilderPageInner() {
               ))}
               <button
                 onClick={addExp}
-                className="flex items-center gap-1.5 text-xs text-violet-400 hover:text-violet-300 transition-colors duration-300 font-semibold px-1 py-1"
+                className="flex items-center gap-1.5 text-xs text-violet-600 dark:text-violet-400 hover:text-violet-700 dark:hover:text-violet-300 transition-colors duration-300 font-semibold px-1 py-1"
               >
-                <span className="w-4 h-4 flex items-center justify-center rounded bg-violet-500/10 text-[10px]">+</span>
+                <span className="w-4 h-4 flex items-center justify-center rounded bg-violet-100 dark:bg-violet-500/10 text-[10px]">+</span>
                 Add Experience
               </button>
             </div>
@@ -441,7 +441,7 @@ function BuilderPageInner() {
             <SectionHeader>Education</SectionHeader>
             <div className="space-y-3">
               {education.map((edu, i) => (
-                <div key={i} className="bg-white/[0.02] border border-white/[0.05] rounded-xl p-4 space-y-2.5">
+                <div key={i} className="bg-gray-50 dark:bg-white/[0.02] border border-gray-100 dark:border-white/[0.05] rounded-xl p-4 space-y-2.5 transition-colors duration-300">
                   <FormInput
                     placeholder="College / University"
                     value={edu.college}
@@ -454,7 +454,7 @@ function BuilderPageInner() {
                   {education.length > 1 && (
                     <button
                       onClick={() => removeEdu(i)}
-                      className="text-xs text-rose-400/60 hover:text-rose-400 transition-colors duration-300 font-medium"
+                      className="text-xs text-rose-400/60 hover:text-rose-500 dark:hover:text-rose-400 transition-colors duration-300 font-medium"
                     >
                       Remove entry
                     </button>
@@ -463,9 +463,9 @@ function BuilderPageInner() {
               ))}
               <button
                 onClick={addEdu}
-                className="flex items-center gap-1.5 text-xs text-violet-400 hover:text-violet-300 transition-colors duration-300 font-semibold px-1 py-1"
+                className="flex items-center gap-1.5 text-xs text-violet-600 dark:text-violet-400 hover:text-violet-700 dark:hover:text-violet-300 transition-colors duration-300 font-semibold px-1 py-1"
               >
-                <span className="w-4 h-4 flex items-center justify-center rounded bg-violet-500/10 text-[10px]">+</span>
+                <span className="w-4 h-4 flex items-center justify-center rounded bg-violet-100 dark:bg-violet-500/10 text-[10px]">+</span>
                 Add Education
               </button>
             </div>
@@ -473,7 +473,7 @@ function BuilderPageInner() {
             <SectionHeader>Projects</SectionHeader>
             <div className="space-y-3 pb-4">
               {projects.map((proj, i) => (
-                <div key={i} className="bg-white/[0.02] border border-white/[0.05] rounded-xl p-4 space-y-2.5">
+                <div key={i} className="bg-gray-50 dark:bg-white/[0.02] border border-gray-100 dark:border-white/[0.05] rounded-xl p-4 space-y-2.5 transition-colors duration-300">
                   <FormInput placeholder="Project Title" value={proj.title} onChange={(v) => handleProjChange(i, "title", v)} />
                   <FormInput
                     placeholder="Tech Stack (e.g. React, MongoDB)"
@@ -489,7 +489,7 @@ function BuilderPageInner() {
                   {projects.length > 1 && (
                     <button
                       onClick={() => removeProj(i)}
-                      className="text-xs text-rose-400/60 hover:text-rose-400 transition-colors duration-300 font-medium"
+                      className="text-xs text-rose-400/60 hover:text-rose-500 dark:hover:text-rose-400 transition-colors duration-300 font-medium"
                     >
                       Remove entry
                     </button>
@@ -498,9 +498,9 @@ function BuilderPageInner() {
               ))}
               <button
                 onClick={addProj}
-                className="flex items-center gap-1.5 text-xs text-violet-400 hover:text-violet-300 transition-colors duration-300 font-semibold px-1 py-1"
+                className="flex items-center gap-1.5 text-xs text-violet-600 dark:text-violet-400 hover:text-violet-700 dark:hover:text-violet-300 transition-colors duration-300 font-semibold px-1 py-1"
               >
-                <span className="w-4 h-4 flex items-center justify-center rounded bg-violet-500/10 text-[10px]">+</span>
+                <span className="w-4 h-4 flex items-center justify-center rounded bg-violet-100 dark:bg-violet-500/10 text-[10px]">+</span>
                 Add Project
               </button>
             </div>
@@ -509,7 +509,7 @@ function BuilderPageInner() {
         </div>
 
         {/* ═══ RIGHT: LIVE PREVIEW ═══ */}
-        <div className="relative rounded-2xl overflow-hidden flex flex-col border border-white/[0.06]" style={{ background: "linear-gradient(135deg, #e8ecf1, #dfe4ea, #e2e6ec)" }}>
+        <div className="relative rounded-2xl overflow-hidden flex flex-col border border-gray-200 dark:border-white/[0.06] shadow-sm dark:shadow-none transition-colors duration-300" style={{ background: "linear-gradient(135deg, #e8ecf1, #dfe4ea, #e2e6ec)" }}>
           {/* Subtle top accent */}
           <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-indigo-400/30 to-transparent z-10" />
 
@@ -559,7 +559,7 @@ function BuilderPageInner() {
       {/* ═══ AI MODAL ═══ */}
       {aiModalOpen && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 px-4">
-          <div className="relative bg-[#0d0d14] border border-white/[0.08] rounded-2xl p-8 w-full max-w-lg shadow-2xl shadow-violet-900/20 overflow-hidden">
+          <div className="relative bg-white dark:bg-[#0d0d14] border border-gray-200 dark:border-white/[0.08] rounded-2xl p-8 w-full max-w-lg shadow-2xl shadow-violet-900/20 overflow-hidden transition-colors duration-300">
             {/* Top accent */}
             <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-violet-500/50 to-transparent" />
             {/* Background glow */}
@@ -569,19 +569,19 @@ function BuilderPageInner() {
               <h2 className="text-xl font-extrabold mb-2 tracking-tight">
                 🤖 Generate with <span className="gradient-text">AI</span>
               </h2>
-              <p className="text-slate-500 text-sm mb-6 leading-relaxed">
+              <p className="text-gray-500 dark:text-slate-500 text-sm mb-6 leading-relaxed">
                 Describe yourself — your skills, experience, and background. AI will fill in your resume automatically.
               </p>
 
               <textarea
-                className="w-full bg-white/[0.03] border border-white/[0.08] rounded-xl p-4 text-sm text-white placeholder-slate-600 resize-none h-36 focus:outline-none focus:border-violet-500/50 focus:ring-1 focus:ring-violet-500/20 transition-all duration-300"
+                className="w-full bg-gray-50 dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.08] rounded-xl p-4 text-sm text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-slate-600 resize-none h-36 focus:outline-none focus:border-violet-500/50 focus:ring-1 focus:ring-violet-500/20 transition-all duration-300"
                 placeholder="e.g. I'm a CS student skilled in React, Node.js and MongoDB. I built a resume builder SaaS as my portfolio project."
                 value={aiDescription}
                 onChange={(e) => setAiDescription(e.target.value)}
               />
 
               {aiError && (
-                <p className="text-rose-400 text-xs mt-2 font-medium">{aiError}</p>
+                <p className="text-rose-500 dark:text-rose-400 text-xs mt-2 font-medium">{aiError}</p>
               )}
 
               <div className="flex gap-3 mt-5">
@@ -597,7 +597,7 @@ function BuilderPageInner() {
                 </button>
                 <button
                   onClick={() => { setAiModalOpen(false); setAiDescription(""); setAiError(""); }}
-                  className="px-6 py-3.5 bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] hover:border-white/[0.15] text-white rounded-xl text-sm font-medium transition-all duration-300"
+                  className="px-6 py-3.5 bg-gray-100 dark:bg-white/[0.04] hover:bg-gray-200 dark:hover:bg-white/[0.08] border border-gray-200 dark:border-white/[0.08] hover:border-gray-300 dark:hover:border-white/[0.15] rounded-xl text-sm font-medium transition-all duration-300"
                 >
                   Cancel
                 </button>
@@ -617,7 +617,7 @@ export default function BuilderPage() {
     <Suspense fallback={
       <div className="h-full flex flex-col items-center justify-center gap-4">
         <div className="w-10 h-10 border-2 border-violet-500/30 border-t-violet-500 rounded-full animate-spin" />
-        <p className="text-slate-500 text-sm font-medium">Loading builder...</p>
+        <p className="text-gray-500 dark:text-slate-500 text-sm font-medium">Loading builder...</p>
       </div>
     }>
       <BuilderPageInner />
