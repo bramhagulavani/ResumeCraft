@@ -15,6 +15,8 @@ An AI-powered resume builder built with Next.js, MongoDB, and Clerk authenticati
 - 🔐 **Authentication** — Secure sign-in/sign-up with Clerk
 - 💾 **Full CRUD** — Create, edit, delete your resumes
 - 🗄️ **MongoDB Atlas** — Cloud database with user ownership
+- 🌙 **Dark/Light Theme** — Toggle between dark and light mode
+- 📱 **Phone & LinkedIn** — Personal contact fields on every resume
 
 ---
 
@@ -24,9 +26,9 @@ An AI-powered resume builder built with Next.js, MongoDB, and Clerk authenticati
 |-------|-----------|
 | Framework | Next.js 15, React 19, TypeScript |
 | Styling | Tailwind CSS |
-| Auth | Clerk |
+| Auth | Clerk v6 |
 | Database | MongoDB Atlas + Mongoose |
-| AI | OpenRouter (Llama 3.2) |
+| AI | OpenRouter (Llama 3.2 Free) |
 | PDF | html2pdf.js |
 | Deployment | Vercel |
 
@@ -36,7 +38,7 @@ An AI-powered resume builder built with Next.js, MongoDB, and Clerk authenticati
 
 ### Prerequisites
 - Node.js 18+
-- MongoDB (local or Atlas)
+- MongoDB Atlas account (free)
 - Clerk account (free)
 - OpenRouter account (free)
 
@@ -56,7 +58,7 @@ Open [http://localhost:3000](http://localhost:3000)
 Create `.env.local` in the project root:
 
 ```env
-MONGODB_URI=mongodb://localhost:27017/resumecraft
+MONGODB_URI=mongodb+srv://...@cluster0.mongodb.net/resumecraft
 
 NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_test_...
 CLERK_SECRET_KEY=sk_test_...
@@ -90,6 +92,8 @@ OPENROUTER_API_KEY=sk-or-v1-...
   userId: string,
   name: string,
   email: string,
+  phone: string,
+  linkedin: string,
   summary: string,
   skills: string[],
   experience: [{ company, role, description }],
@@ -108,6 +112,13 @@ OPENROUTER_API_KEY=sk-or-v1-...
 
 **Dev:** `typescript` · `tailwindcss` · `eslint`
 
+---
+
+## 👤 Author
+
+**Bramha Vinayak Gulavani**
+- GitHub: [@bramhagulavani](https://github.com/bramhagulavani)
+- LinkedIn: [linkedin.com/in/bramhagulavani](https://linkedin.com/in/bramhagulavani)
 
 
 ## 📁 Project Structure
