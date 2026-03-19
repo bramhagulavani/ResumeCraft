@@ -10,13 +10,14 @@ export default function Sidebar() {
     { name: "Dashboard", href: "/dashboard", icon: "📊" },
     { name: "Builder", href: "/builder", icon: "✍️" },
     { name: "Templates", href: "/templates", icon: "🎨" },
+    { name: "ATS Checker", href: "/ats", icon: "🎯" },
   ];
 
   return (
     <aside className="w-64 bg-white/80 dark:bg-[#0a0a0f]/80 border-r border-gray-200 dark:border-white/[0.06] flex flex-col p-6 backdrop-blur-xl transition-colors duration-300">
       {/* Logo */}
       <div className="text-2xl font-extrabold mb-10 tracking-tight">
-        Resume<span className="gradient-text">Craft</span>
+        Resume<span className="bg-gradient-to-r from-violet-500 to-indigo-500 bg-clip-text text-transparent">Craft</span>
       </div>
 
       {/* Navigation */}
