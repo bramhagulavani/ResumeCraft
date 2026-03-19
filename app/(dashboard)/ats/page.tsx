@@ -27,18 +27,8 @@ function ScoreCircle({ score, verdict }: { score: number; verdict: keyof typeof 
     <div className="flex flex-col items-center gap-3">
       <div className="relative w-36 h-36">
         <svg className="w-full h-full -rotate-90" viewBox="0 0 120 120">
-          {/* Background circle */}
           <circle cx="60" cy="60" r={radius} fill="none" stroke="currentColor" strokeWidth="8" className="text-gray-200 dark:text-white/10" />
-          {/* Score arc */}
-          <circle
-            cx="60" cy="60" r={radius}
-            fill="none"
-            strokeWidth="8"
-            strokeDasharray={circumference}
-            strokeDashoffset={offset}
-            strokeLinecap="round"
-            className={`${config.ring} transition-all duration-1000`}
-          />
+          <circle cx="60" cy="60" r={radius} fill="none" strokeWidth="8" strokeDasharray={circumference} strokeDashoffset={offset} strokeLinecap="round" className={`${config.ring} transition-all duration-1000`} />
         </svg>
         <div className="absolute inset-0 flex flex-col items-center justify-center">
           <span className={`text-4xl font-extrabold ${config.color}`}>{score}</span>
@@ -74,12 +64,10 @@ export default function ATSCheckerPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ resumeText, jobDescription }),
       });
-
       if (!res.ok) {
         const err = await res.json();
         throw new Error(err.message || "ATS check failed");
       }
-
       const data = await res.json();
       setResult(data);
     } catch (err: unknown) {
@@ -99,18 +87,17 @@ export default function ATSCheckerPage() {
   return (
     <div>
       {/* Header */}
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-white flex items-center gap-3">
+      <div className="mb-6 md:mb-8">
+        <h1 className="text-2xl md:text-3xl font-bold tracking-tight text-gray-900 dark:text-white flex items-center gap-3">
           🎯 ATS Checker
         </h1>
         <p className="text-gray-500 dark:text-slate-400 mt-2 text-sm max-w-xl">
-          Paste your resume and a job description. Our AI will score your resume against the job requirements and suggest improvements.
+          Paste your resume and a job description. Our AI will score your resume and suggest improvements.
         </p>
       </div>
 
-      {/* Input Section */}
-      <div className="grid grid-cols-2 gap-6 mb-6">
-        {/* Resume Input */}
+      {/* Input Section — stacked on mobile, side by side on desktop */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 mb-6">
         <div className="flex flex-col gap-2">
           <label className="text-xs font-bold tracking-[0.15em] uppercase text-gray-400 dark:text-slate-500 flex items-center gap-2">
             <span className="w-1 h-4 bg-gradient-to-b from-violet-500 to-indigo-500 rounded-full" />
@@ -119,8 +106,8 @@ export default function ATSCheckerPage() {
           <textarea
             value={resumeText}
             onChange={(e) => setResumeText(e.target.value)}
-            placeholder="Paste your resume text here...&#10;&#10;Include your name, skills, experience, education, and projects."
-            rows={14}
+            placeholder="Paste your resume text here..."
+            rows={12}
             className="w-full px-4 py-3 rounded-xl bg-gray-50 dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] text-gray-900 dark:text-slate-100 placeholder-gray-400 dark:placeholder-slate-600 text-sm focus:outline-none focus:border-violet-500/50 focus:ring-1 focus:ring-violet-500/20 transition-all duration-300 resize-none leading-relaxed"
           />
           <p className="text-xs text-gray-400 dark:text-slate-600">
@@ -128,7 +115,6 @@ export default function ATSCheckerPage() {
           </p>
         </div>
 
-        {/* Job Description Input */}
         <div className="flex flex-col gap-2">
           <label className="text-xs font-bold tracking-[0.15em] uppercase text-gray-400 dark:text-slate-500 flex items-center gap-2">
             <span className="w-1 h-4 bg-gradient-to-b from-indigo-500 to-purple-500 rounded-full" />
@@ -137,8 +123,8 @@ export default function ATSCheckerPage() {
           <textarea
             value={jobDescription}
             onChange={(e) => setJobDescription(e.target.value)}
-            placeholder="Paste the job description here...&#10;&#10;Include requirements, responsibilities, and desired skills."
-            rows={14}
+            placeholder="Paste the job description here..."
+            rows={12}
             className="w-full px-4 py-3 rounded-xl bg-gray-50 dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] text-gray-900 dark:text-slate-100 placeholder-gray-400 dark:placeholder-slate-600 text-sm focus:outline-none focus:border-violet-500/50 focus:ring-1 focus:ring-violet-500/20 transition-all duration-300 resize-none leading-relaxed"
           />
           <p className="text-xs text-gray-400 dark:text-slate-600">
@@ -147,17 +133,16 @@ export default function ATSCheckerPage() {
         </div>
       </div>
 
-      {/* Error */}
       {error && (
         <p className="text-rose-500 dark:text-rose-400 text-sm mb-4 font-medium">{error}</p>
       )}
 
       {/* Action Buttons */}
-      <div className="flex gap-3 mb-8">
+      <div className="flex flex-wrap gap-3 mb-8">
         <button
           onClick={handleCheck}
           disabled={loading || !resumeText.trim() || !jobDescription.trim()}
-          className="px-8 py-3 bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 disabled:from-violet-800 disabled:to-indigo-800 disabled:cursor-not-allowed text-white rounded-xl font-semibold text-sm transition-all duration-300 shadow-lg shadow-violet-900/20 flex items-center gap-2"
+          className="flex-1 sm:flex-none px-6 md:px-8 py-3 bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 disabled:from-violet-800 disabled:to-indigo-800 disabled:cursor-not-allowed text-white rounded-xl font-semibold text-sm transition-all duration-300 shadow-lg shadow-violet-900/20 flex items-center justify-center gap-2"
         >
           {loading ? (
             <>
@@ -167,9 +152,7 @@ export default function ATSCheckerPage() {
               </svg>
               Analyzing...
             </>
-          ) : (
-            "🎯 Check ATS Score"
-          )}
+          ) : "🎯 Check ATS Score"}
         </button>
         {(result || resumeText || jobDescription) && (
           <button
@@ -181,67 +164,59 @@ export default function ATSCheckerPage() {
         )}
       </div>
 
-      {/* Results Section */}
+      {/* Results */}
       {result && (
-        <div className="space-y-6">
+        <div className="space-y-5">
 
-          {/* Score + Stats Row */}
-          <div className="grid grid-cols-4 gap-5">
+          {/* Score + Keywords — stack on mobile */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-5">
 
             {/* Score Circle */}
-            <div className="col-span-1 bg-white dark:bg-white/[0.02] border border-gray-200 dark:border-white/[0.06] rounded-2xl p-6 flex items-center justify-center">
+            <div className="bg-white dark:bg-white/[0.02] border border-gray-200 dark:border-white/[0.06] rounded-2xl p-6 flex items-center justify-center">
               <ScoreCircle score={result.score} verdict={result.verdict} />
             </div>
 
             {/* Matched Keywords */}
-            <div className="col-span-1 bg-white dark:bg-white/[0.02] border border-gray-200 dark:border-white/[0.06] rounded-2xl p-5">
-              <h3 className="text-xs font-bold tracking-[0.15em] uppercase text-emerald-500 mb-3 flex items-center gap-2">
-                ✅ Matched Keywords
-              </h3>
+            <div className="bg-white dark:bg-white/[0.02] border border-gray-200 dark:border-white/[0.06] rounded-2xl p-5">
+              <h3 className="text-xs font-bold tracking-[0.15em] uppercase text-emerald-500 mb-3">✅ Matched</h3>
               <div className="flex flex-wrap gap-1.5">
                 {result.matchedKeywords.length > 0 ? result.matchedKeywords.map((kw, i) => (
                   <span key={i} className="text-[11px] px-2.5 py-0.5 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 rounded-full font-medium">
                     {kw}
                   </span>
-                )) : (
-                  <p className="text-xs text-gray-400">None found</p>
-                )}
+                )) : <p className="text-xs text-gray-400">None found</p>}
               </div>
             </div>
 
             {/* Missing Keywords */}
-            <div className="col-span-1 bg-white dark:bg-white/[0.02] border border-gray-200 dark:border-white/[0.06] rounded-2xl p-5">
-              <h3 className="text-xs font-bold tracking-[0.15em] uppercase text-rose-500 mb-3 flex items-center gap-2">
-                ❌ Missing Keywords
-              </h3>
+            <div className="bg-white dark:bg-white/[0.02] border border-gray-200 dark:border-white/[0.06] rounded-2xl p-5">
+              <h3 className="text-xs font-bold tracking-[0.15em] uppercase text-rose-500 mb-3">❌ Missing</h3>
               <div className="flex flex-wrap gap-1.5">
                 {result.missingKeywords.length > 0 ? result.missingKeywords.map((kw, i) => (
                   <span key={i} className="text-[11px] px-2.5 py-0.5 bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/20 rounded-full font-medium">
                     {kw}
                   </span>
-                )) : (
-                  <p className="text-xs text-gray-400">None missing 🎉</p>
-                )}
+                )) : <p className="text-xs text-gray-400">None missing 🎉</p>}
               </div>
             </div>
 
             {/* Quick Stats */}
-            <div className="col-span-1 bg-white dark:bg-white/[0.02] border border-gray-200 dark:border-white/[0.06] rounded-2xl p-5 flex flex-col justify-center gap-4">
+            <div className="bg-white dark:bg-white/[0.02] border border-gray-200 dark:border-white/[0.06] rounded-2xl p-5 flex sm:flex-col justify-around sm:justify-center gap-4">
               <div className="text-center">
                 <div className="text-3xl font-extrabold text-emerald-400">{result.matchedKeywords.length}</div>
-                <div className="text-xs text-gray-400 dark:text-slate-500 mt-0.5">Keywords Matched</div>
+                <div className="text-xs text-gray-400 dark:text-slate-500 mt-0.5">Matched</div>
               </div>
-              <div className="w-full h-px bg-gray-100 dark:bg-white/[0.06]" />
+              <div className="w-px sm:w-full sm:h-px bg-gray-100 dark:bg-white/[0.06]" />
               <div className="text-center">
                 <div className="text-3xl font-extrabold text-rose-400">{result.missingKeywords.length}</div>
-                <div className="text-xs text-gray-400 dark:text-slate-500 mt-0.5">Keywords Missing</div>
+                <div className="text-xs text-gray-400 dark:text-slate-500 mt-0.5">Missing</div>
               </div>
             </div>
           </div>
 
           {/* Suggestions */}
-          <div className="bg-white dark:bg-white/[0.02] border border-gray-200 dark:border-white/[0.06] rounded-2xl p-6">
-            <h3 className="text-xs font-bold tracking-[0.15em] uppercase text-violet-500 mb-4 flex items-center gap-2">
+          <div className="bg-white dark:bg-white/[0.02] border border-gray-200 dark:border-white/[0.06] rounded-2xl p-5 md:p-6">
+            <h3 className="text-xs font-bold tracking-[0.15em] uppercase text-violet-500 mb-4">
               💡 AI Suggestions to Improve Your Score
             </h3>
             <div className="space-y-3">
@@ -253,14 +228,13 @@ export default function ATSCheckerPage() {
               ))}
             </div>
           </div>
-
         </div>
       )}
 
       {/* Empty state */}
       {!result && !loading && (
-        <div className="flex flex-col items-center justify-center py-16 text-center">
-          <div className="text-6xl mb-4">🎯</div>
+        <div className="flex flex-col items-center justify-center py-12 md:py-16 text-center">
+          <div className="text-5xl md:text-6xl mb-4">🎯</div>
           <p className="text-gray-500 dark:text-slate-400 text-sm font-medium">
             Paste your resume and a job description above to get your ATS score
           </p>

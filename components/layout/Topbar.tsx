@@ -7,11 +7,17 @@ export default function Topbar() {
   const { theme, toggleTheme } = useTheme();
 
   return (
-    <header className="h-16 border-b border-gray-200 dark:border-white/[0.06] flex items-center justify-between px-8 bg-white/60 dark:bg-[#0a0a0f]/60 backdrop-blur-xl transition-colors duration-300">
-      <div className="text-gray-500 dark:text-slate-500 text-sm font-medium">
+    <header className="h-16 border-b border-gray-200 dark:border-white/[0.06] flex items-center justify-between px-4 md:px-8 bg-white/60 dark:bg-[#0a0a0f]/60 backdrop-blur-xl transition-colors duration-300">
+      {/* Left — hidden on mobile (hamburger takes its place), shown on desktop */}
+      <div className="hidden md:block text-gray-500 dark:text-slate-500 text-sm font-medium">
         Craft your professional resume
       </div>
-      <div className="flex items-center gap-3">
+
+      {/* Mobile spacer so buttons stay right */}
+      <div className="md:hidden w-10" />
+
+      {/* Right actions */}
+      <div className="flex items-center gap-2 md:gap-3">
         {/* Theme Toggle */}
         <button
           onClick={toggleTheme}
@@ -20,14 +26,17 @@ export default function Topbar() {
         >
           {theme === "dark" ? "☀️" : "🌙"}
         </button>
+
+        {/* New Resume — hidden text on mobile */}
         <a
           href="/builder"
-          className="group flex items-center gap-2 px-5 py-2 bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 text-white rounded-xl text-sm font-semibold transition-all duration-300 shadow-md shadow-violet-900/20 hover:shadow-violet-800/40 hover:scale-[1.02]"
+          className="flex items-center gap-1.5 px-3 md:px-5 py-2 bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 text-white rounded-xl text-sm font-semibold transition-all duration-300 shadow-md shadow-violet-900/20 hover:shadow-violet-800/40 hover:scale-[1.02]"
         >
           <span className="text-base leading-none">+</span>
-          New Resume
+          <span className="hidden sm:inline">New Resume</span>
         </a>
-        {/* Clerk User Button — shows profile pic + logout */}
+
+        {/* Clerk User Button */}
         <UserButton afterSignOutUrl="/" />
       </div>
     </header>
