@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { useToast } from "@/components/ui/Toast";
 
 interface Resume {
   _id: string;
@@ -13,6 +14,7 @@ interface Resume {
 
 export default function DashboardPage() {
   const router = useRouter();
+  const { toast } = useToast();
   const [resumes, setResumes] = useState<Resume[]>([]);
   const [loading, setLoading] = useState(true);
   const [deletingId, setDeletingId] = useState<string | null>(null);
@@ -47,7 +49,7 @@ export default function DashboardPage() {
       }
       setResumes((prev) => prev.filter((r) => r._id !== id));
     } catch (error: unknown) {
-      alert(`Delete failed: ${error instanceof Error ? error.message : "Unknown error"}`);
+      toast.error(error instanceof Error ? error.message : "Unknown error", "Delete Failed");
     } finally {
       setDeletingId(null);
     }

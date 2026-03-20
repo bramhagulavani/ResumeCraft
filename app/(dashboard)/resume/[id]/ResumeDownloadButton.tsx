@@ -1,9 +1,11 @@
 "use client";
 
 import { useState } from "react";
+import { useToast } from "@/components/ui/Toast";
 
 export default function ResumeDownloadButton({ name }: { name: string }) {
   const [downloading, setDownloading] = useState(false);
+  const { toast } = useToast();
 
   const downloadPDF = async () => {
     const element = document.getElementById("resume-preview");
@@ -23,7 +25,7 @@ export default function ResumeDownloadButton({ name }: { name: string }) {
 
       await html2pdf().set(opt).from(element).save();
     } catch (error: any) {
-      alert(`PDF download failed: ${error.message || "Unknown error"}`);
+      toast.error(error?.message || "Unknown error", "Download Failed");
     } finally {
       setDownloading(false);
     }

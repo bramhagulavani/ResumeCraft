@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useToast } from "@/components/ui/Toast";
 
 interface ATSResult {
   score: number;
@@ -43,19 +44,18 @@ function ScoreCircle({ score, verdict }: { score: number; verdict: keyof typeof 
 }
 
 export default function ATSCheckerPage() {
+  const { toast } = useToast();
   const [resumeText, setResumeText] = useState("");
   const [jobDescription, setJobDescription] = useState("");
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<ATSResult | null>(null);
-  const [error, setError] = useState("");
 
   const handleCheck = async () => {
     if (!resumeText.trim() || !jobDescription.trim()) {
-      setError("Please fill in both fields.");
+      toast.warning("Please fill in both fields.", "Missing Input");
       return;
     }
     setLoading(true);
-    setError("");
     setResult(null);
 
     try {
@@ -71,7 +71,7 @@ export default function ATSCheckerPage() {
       const data = await res.json();
       setResult(data);
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : "Something went wrong. Please try again.");
+      toast.error(err instanceof Error ? err.message : "Something went wrong. Please try again.", "ATS Check Failed");
     } finally {
       setLoading(false);
     }
@@ -81,7 +81,6 @@ export default function ATSCheckerPage() {
     setResumeText("");
     setJobDescription("");
     setResult(null);
-    setError("");
   };
 
   return (
@@ -132,10 +131,6 @@ export default function ATSCheckerPage() {
           </p>
         </div>
       </div>
-
-      {error && (
-        <p className="text-rose-500 dark:text-rose-400 text-sm mb-4 font-medium">{error}</p>
-      )}
 
       {/* Action Buttons */}
       <div className="flex flex-wrap gap-3 mb-8">

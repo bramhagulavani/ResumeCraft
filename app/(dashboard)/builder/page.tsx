@@ -6,6 +6,7 @@ import ClassicTemplate from "@/components/resumeTemplates/ClassicTemplate";
 import ModernTemplate from "@/components/resumeTemplates/ModernTemplate";
 import MinimalTemplate from "@/components/resumeTemplates/MinimalTemplate";
 import { ResumeData } from "@/components/resumeTemplates/types";
+import { useToast } from "@/components/ui/Toast";
 
 type TemplateKey = "classic" | "modern" | "minimal";
 
@@ -49,6 +50,7 @@ const FormTextarea = ({
 function BuilderPageInner() {
   const searchParams = useSearchParams();
   const router = useRouter();
+  const { toast } = useToast();
   const resumeId = searchParams.get("id");
 
   // ── Mobile tab state ──
@@ -92,7 +94,7 @@ function BuilderPageInner() {
         setProjects(data.projects?.length ? data.projects : [{ title: "", description: "", tech: "" }]);
         setTemplate(data.template || "classic");
       } catch {
-        alert("Failed to load resume for editing.");
+        toast.error("Could not load resume. Please try again.", "Load Failed");
       } finally {
         setLoadingResume(false);
       }
@@ -139,9 +141,9 @@ function BuilderPageInner() {
   };
 
   const handleSave = async () => {
-    if (!name.trim()) { alert("Please enter your name"); return; }
-    if (!email.trim()) { alert("Please enter your email"); return; }
-    if (!phone.trim()) { alert("Please enter your phone number"); return; }
+    if (!name.trim()) { toast.error("Please enter your name", "Missing Field"); return; }
+    if (!email.trim()) { toast.error("Please enter your email", "Missing Field"); return; }
+    if (!phone.trim()) { toast.error("Please enter your phone number", "Missing Field"); return; }
     setSaving(true);
     try {
       const payload = { name: name.trim(), email: email.trim(), phone: phone.trim(), linkedin: linkedin.trim(), summary: summary.trim(), skills: skills.filter((s) => s.trim() !== ""), experience, education, projects, template };
@@ -150,7 +152,11 @@ function BuilderPageInner() {
       const res = await fetch(url, { method, headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) });
       const data = await res.json();
       if (!res.ok) throw new Error(data.message || "Error saving resume");
-      alert(resumeId ? "Resume updated successfully!" : "Resume saved successfully!");
+      if (resumeId) {
+        toast.success("Your resume has been updated.", "Updated!");
+      } else {
+        toast.success("Your resume has been saved.", "Saved!");
+      }
       if (resumeId) {
         router.push(`/resume/${resumeId}`);
       } else {
@@ -160,7 +166,7 @@ function BuilderPageInner() {
         setProjects([{ title: "", description: "", tech: "" }]);
       }
     } catch (error: unknown) {
-      alert(`Error saving resume: ${error instanceof Error ? error.message : "Unknown error"}`);
+      toast.error(error instanceof Error ? error.message : "Unknown error", "Save Failed");
     } finally {
       setSaving(false);
     }
@@ -168,13 +174,13 @@ function BuilderPageInner() {
 
   const downloadPDF = async () => {
     const element = document.getElementById("resume-preview");
-    if (!element) { alert("Nothing to download yet."); return; }
+    if (!element) { toast.warning("Fill in your details first.", "Nothing to Download"); return; }
     setDownloading(true);
     try {
       const html2pdf = (await import("html2pdf.js")).default;
       await html2pdf().set({ margin: 0.5, filename: `${name.trim() || "resume"}.pdf`, image: { type: "jpeg", quality: 0.98 }, html2canvas: { scale: 2, useCORS: true }, jsPDF: { unit: "in", format: "letter", orientation: "portrait" } }).from(element).save();
     } catch (error: unknown) {
-      alert(`PDF download failed: ${error instanceof Error ? error.message : "Unknown error"}`);
+      toast.error(error instanceof Error ? error.message : "Unknown error", "Download Failed");
     } finally {
       setDownloading(false);
     }
