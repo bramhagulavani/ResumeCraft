@@ -2,26 +2,34 @@
 
 ResumeCraft is a full-stack AI-powered resume builder built with Next.js App Router, Clerk authentication, MongoDB, and OpenRouter.
 
+🔗 **Live Demo:** [resume-craft-git-main-bramhagulavani-gmailcoms-projects.vercel.app](https://resume-craft-git-main-bramhagulavani-gmailcoms-projects.vercel.app)
+
 ## Features
 
 - AI-assisted resume content generation
+- AI-powered cover letter generator with tone selector
 - ATS score checker against a job description
 - Live resume preview while editing
 - Three templates: Classic, Modern, Minimal
+- Templates gallery with live previews
 - PDF export from the builder
 - Authenticated dashboard with full resume CRUD
+- Toast notification system
 - Dark/light theme support
+- Fully mobile responsive with hamburger sidebar
+- Phone and LinkedIn fields on every resume
 
 ## Tech Stack
 
 | Layer | Technology |
 |-------|------------|
 | Framework | Next.js 15 + React 19 + TypeScript |
-| Styling | Tailwind CSS v4 |
-| Authentication | Clerk |
+| Styling | Tailwind CSS |
+| Authentication | Clerk v6 |
 | Database | MongoDB Atlas + Mongoose |
-| AI | OpenRouter Chat Completions API |
+| AI | OpenRouter (NVIDIA Nemotron) |
 | PDF Export | html2pdf.js |
+| Deployment | Vercel |
 
 ## Getting Started
 
@@ -62,17 +70,18 @@ OPENROUTER_API_KEY=sk-or-v1-...
 
 ## Available Scripts
 
-- `npm run dev` - Start development server
-- `npm run build` - Create production build
-- `npm run start` - Run production server
-- `npm run lint` - Run ESLint
+- `npm run dev` — Start development server
+- `npm run build` — Create production build
+- `npm run start` — Run production server
+- `npm run lint` — Run ESLint
 
 ## API Routes
 
 | Method | Endpoint | Description |
 |--------|----------|-------------|
-| POST | `/api/ai` | Generate resume summary, skills, and experience from prompt |
-| POST | `/api/ats` | Analyze resume text vs job description and return ATS result |
+| POST | `/api/ai` | Generate resume summary, skills, and experience |
+| POST | `/api/ats` | Analyze resume vs job description, return ATS score |
+| POST | `/api/cover-letter` | Generate tailored cover letter from resume + job description |
 | GET | `/api/resume` | Get current user's resumes |
 | POST | `/api/resume` | Create a new resume |
 | GET | `/api/resume/[id]` | Get one resume by id (owner only) |
@@ -107,6 +116,7 @@ resumecraft/
 |  |- (dashboard)/
 |  |  |- ats/page.tsx
 |  |  |- builder/page.tsx
+|  |  |- cover-letter/page.tsx
 |  |  |- dashboard/page.tsx
 |  |  |- resume/[id]/
 |  |  |  |- page.tsx
@@ -115,6 +125,7 @@ resumecraft/
 |  |- api/
 |  |  |- ai/route.ts
 |  |  |- ats/route.ts
+|  |  |- cover-letter/route.ts
 |  |  |- resume/
 |  |  |  |- route.ts
 |  |  |  |- [id]/route.ts
@@ -145,11 +156,11 @@ resumecraft/
 ## Notes
 
 - Protected UI routes are handled via Clerk middleware.
-- API routes also validate authentication and user ownership where applicable.
+- API routes validate authentication and user ownership where applicable.
+- ATS Checker and Cover Letter Generator use NVIDIA Nemotron free model via OpenRouter.
 
 ## Author
 
-- Bramha Vinayak Gulavani
+**Bramha Vinayak Gulavani**
 - GitHub: https://github.com/bramhagulavani
 - LinkedIn: https://linkedin.com/in/bramhagulavani
-
