@@ -53,9 +53,7 @@ function BuilderPageInner() {
   const { toast } = useToast();
   const resumeId = searchParams.get("id");
 
-  // ── Mobile tab state ──
   const [activeTab, setActiveTab] = useState<"form" | "preview">("form");
-
   const [aiModalOpen, setAiModalOpen] = useState(false);
   const [aiDescription, setAiDescription] = useState("");
   const [aiLoading, setAiLoading] = useState(false);
@@ -66,6 +64,7 @@ function BuilderPageInner() {
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [linkedin, setLinkedin] = useState("");
+  const [jobTitle, setJobTitle] = useState("");
   const [summary, setSummary] = useState("");
   const [skills, setSkills] = useState<string[]>([""]);
   const [experience, setExperience] = useState<ResumeData["experience"]>([{ company: "", role: "", description: "" }]);
@@ -87,6 +86,7 @@ function BuilderPageInner() {
         setEmail(data.email || "");
         setPhone(data.phone || "");
         setLinkedin(data.linkedin || "");
+        setJobTitle(data.jobTitle || "");
         setSummary(data.summary || "");
         setSkills(data.skills?.length ? data.skills : [""]);
         setExperience(data.experience?.length ? data.experience : [{ company: "", role: "", description: "" }]);
@@ -146,7 +146,16 @@ function BuilderPageInner() {
     if (!phone.trim()) { toast.error("Please enter your phone number", "Missing Field"); return; }
     setSaving(true);
     try {
-      const payload = { name: name.trim(), email: email.trim(), phone: phone.trim(), linkedin: linkedin.trim(), summary: summary.trim(), skills: skills.filter((s) => s.trim() !== ""), experience, education, projects, template };
+      const payload = {
+        name: name.trim(),
+        email: email.trim(),
+        phone: phone.trim(),
+        linkedin: linkedin.trim(),
+        jobTitle: jobTitle.trim(),
+        summary: summary.trim(),
+        skills: skills.filter((s) => s.trim() !== ""),
+        experience, education, projects, template,
+      };
       const url = resumeId ? `/api/resume/${resumeId}` : "/api/resume";
       const method = resumeId ? "PUT" : "POST";
       const res = await fetch(url, { method, headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) });
@@ -154,13 +163,11 @@ function BuilderPageInner() {
       if (!res.ok) throw new Error(data.message || "Error saving resume");
       if (resumeId) {
         toast.success("Your resume has been updated.", "Updated!");
-      } else {
-        toast.success("Your resume has been saved.", "Saved!");
-      }
-      if (resumeId) {
         router.push(`/resume/${resumeId}`);
       } else {
-        setName(""); setEmail(""); setPhone(""); setLinkedin(""); setSummary(""); setSkills([""]);
+        toast.success("Your resume has been saved.", "Saved!");
+        setName(""); setEmail(""); setPhone(""); setLinkedin(""); setJobTitle("");
+        setSummary(""); setSkills([""]);
         setExperience([{ company: "", role: "", description: "" }]);
         setEducation([{ college: "", degree: "", year: "" }]);
         setProjects([{ title: "", description: "", tech: "" }]);
@@ -188,7 +195,7 @@ function BuilderPageInner() {
 
   const filledSkills = skills.filter((s) => s.trim());
   const isEmpty = !name && !email && !summary && filledSkills.length === 0;
-  const resumeData: ResumeData = { name, email, phone, linkedin, summary, skills: filledSkills, experience, education, projects };
+  const resumeData: ResumeData = { name, email, phone, linkedin, jobTitle, summary, skills: filledSkills, experience, education, projects };
 
   if (loadingResume) {
     return (
@@ -231,21 +238,13 @@ function BuilderPageInner() {
       <div className="flex md:hidden gap-2 mb-4">
         <button
           onClick={() => setActiveTab("form")}
-          className={`flex-1 py-2.5 rounded-xl text-sm font-semibold transition-all duration-300 ${
-            activeTab === "form"
-              ? "bg-gradient-to-r from-violet-600 to-indigo-600 text-white shadow-md"
-              : "bg-gray-100 dark:bg-white/[0.06] text-gray-500 dark:text-slate-400"
-          }`}
+          className={`flex-1 py-2.5 rounded-xl text-sm font-semibold transition-all duration-300 ${activeTab === "form" ? "bg-gradient-to-r from-violet-600 to-indigo-600 text-white shadow-md" : "bg-gray-100 dark:bg-white/[0.06] text-gray-500 dark:text-slate-400"}`}
         >
           ✏️ Edit Form
         </button>
         <button
           onClick={() => setActiveTab("preview")}
-          className={`flex-1 py-2.5 rounded-xl text-sm font-semibold transition-all duration-300 ${
-            activeTab === "preview"
-              ? "bg-gradient-to-r from-violet-600 to-indigo-600 text-white shadow-md"
-              : "bg-gray-100 dark:bg-white/[0.06] text-gray-500 dark:text-slate-400"
-          }`}
+          className={`flex-1 py-2.5 rounded-xl text-sm font-semibold transition-all duration-300 ${activeTab === "preview" ? "bg-gradient-to-r from-violet-600 to-indigo-600 text-white shadow-md" : "bg-gray-100 dark:bg-white/[0.06] text-gray-500 dark:text-slate-400"}`}
         >
           👁 Preview
         </button>
@@ -254,7 +253,7 @@ function BuilderPageInner() {
       {/* Main Content */}
       <div className="flex-1 min-h-0 md:grid md:grid-cols-2 md:gap-6">
 
-        {/* LEFT: FORM — shown on mobile only when activeTab === form */}
+        {/* LEFT: FORM */}
         <div className={`${activeTab === "form" ? "flex" : "hidden"} md:flex flex-col bg-white dark:bg-white/[0.02] rounded-2xl border border-gray-200 dark:border-white/[0.06] overflow-y-auto`}>
           <div className="p-4 md:p-5 space-y-1">
 
@@ -269,6 +268,8 @@ function BuilderPageInner() {
             <SectionHeader>Personal Info</SectionHeader>
             <div className="space-y-2">
               <FormInput placeholder="Full Name" value={name} onChange={setName} />
+              {/* ✅ Job Title — full width below name */}
+              <FormInput placeholder="Job Title (e.g. Full Stack Developer)" value={jobTitle} onChange={setJobTitle} />
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                 <FormInput placeholder="Email Address" value={email} onChange={setEmail} type="email" />
                 <FormInput placeholder="Phone (e.g. +91 98765 43210)" value={phone} onChange={setPhone} type="tel" />
@@ -335,7 +336,7 @@ function BuilderPageInner() {
               <button onClick={addProj} className="text-xs text-violet-500 hover:text-violet-400 transition-colors font-medium">+ Add Project</button>
             </div>
 
-            {/* Mobile Download Button */}
+            {/* Mobile Download */}
             <div className="sm:hidden pt-2 pb-4">
               <button
                 onClick={downloadPDF}
@@ -349,27 +350,19 @@ function BuilderPageInner() {
           </div>
         </div>
 
-        {/* RIGHT: LIVE PREVIEW — shown on mobile only when activeTab === preview */}
+        {/* RIGHT: LIVE PREVIEW */}
         <div className={`${activeTab === "preview" ? "flex" : "hidden"} md:flex flex-col rounded-2xl overflow-y-auto shadow-xl bg-slate-200 dark:bg-[#e2e8f0]`}>
-
-          {/* Template Switcher */}
           <div className="flex gap-2 p-3 justify-center flex-shrink-0">
             {(Object.keys(TEMPLATE_META) as TemplateKey[]).map((key) => (
               <button
                 key={key}
                 onClick={() => setTemplate(key)}
-                className={`px-3 md:px-4 py-1.5 rounded-lg text-xs font-semibold transition-all duration-300 ${
-                  template === key
-                    ? "bg-gradient-to-r from-violet-600 to-indigo-600 text-white shadow-md shadow-violet-900/20"
-                    : "bg-white/50 text-slate-600 hover:bg-white/80 hover:text-slate-800"
-                }`}
+                className={`px-3 md:px-4 py-1.5 rounded-lg text-xs font-semibold transition-all duration-300 ${template === key ? "bg-gradient-to-r from-violet-600 to-indigo-600 text-white shadow-md shadow-violet-900/20" : "bg-white/50 text-slate-600 hover:bg-white/80 hover:text-slate-800"}`}
               >
                 {TEMPLATE_META[key].label}
               </button>
             ))}
           </div>
-
-          {/* Live Preview */}
           <div className="flex-1 overflow-y-auto p-4 md:p-6">
             {isEmpty ? (
               <div className="flex flex-col items-center justify-center h-full text-center pt-20">

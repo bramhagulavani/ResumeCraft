@@ -3,6 +3,7 @@ export interface ResumeData {
   email: string;
   phone?: string;
   linkedin?: string;
+  jobTitle?: string;
   summary: string;
   skills: string[];
   experience: { company: string; role: string; description: string }[];

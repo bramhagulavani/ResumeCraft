@@ -20,14 +20,12 @@ const ProjectSchema = new Schema({
 
 const ResumeSchema = new Schema(
   {
-    userId: {
-      type: String,
-      required: true,
-    },
+    userId: { type: String, required: true },
     name: { type: String, required: true },
     email: String,
     phone: { type: String, default: "" },
     linkedin: { type: String, default: "" },
+    jobTitle: { type: String, default: "" },
     summary: String,
     skills: [String],
     experience: [ExperienceSchema],
