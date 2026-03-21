@@ -1,46 +1,36 @@
 # ResumeCraft
 
-An AI-powered resume builder built with Next.js, MongoDB, and Clerk authentication.
+ResumeCraft is a full-stack AI-powered resume builder built with Next.js App Router, Clerk authentication, MongoDB, and OpenRouter.
 
-🔗 **Live Demo:** [resume-craft-git-main-bramhagulavani-gmailcoms-projects.vercel.app](https://resume-craft-git-main-bramhagulavani-gmailcoms-projects.vercel.app)
+## Features
 
----
+- AI-assisted resume content generation
+- ATS score checker against a job description
+- Live resume preview while editing
+- Three templates: Classic, Modern, Minimal
+- PDF export from the builder
+- Authenticated dashboard with full resume CRUD
+- Dark/light theme support
 
-## ✨ Features
-
-- 🤖 **AI Resume Generator** — Describe yourself and AI fills in your resume
-- 👁️ **Live Preview** — Real-time dual-panel builder
-- 🎨 **3 Templates** — Classic, Modern, and Minimal
-- 📄 **PDF Export** — One-click download, no watermarks
-- 🔐 **Authentication** — Secure sign-in/sign-up with Clerk
-- 💾 **Full CRUD** — Create, edit, delete your resumes
-- 🗄️ **MongoDB Atlas** — Cloud database with user ownership
-- 🌙 **Dark/Light Theme** — Toggle between dark and light mode
-- 📱 **Phone & LinkedIn** — Personal contact fields on every resume
-
----
-
-## 🛠 Tech Stack
+## Tech Stack
 
 | Layer | Technology |
-|-------|-----------|
-| Framework | Next.js 15, React 19, TypeScript |
-| Styling | Tailwind CSS |
-| Auth | Clerk v6 |
+|-------|------------|
+| Framework | Next.js 15 + React 19 + TypeScript |
+| Styling | Tailwind CSS v4 |
+| Authentication | Clerk |
 | Database | MongoDB Atlas + Mongoose |
-| AI | OpenRouter (Llama 3.2 Free) |
-| PDF | html2pdf.js |
-| Deployment | Vercel |
+| AI | OpenRouter Chat Completions API |
+| PDF Export | html2pdf.js |
 
----
-
-## 🚀 Getting Started
+## Getting Started
 
 ### Prerequisites
+
 - Node.js 18+
-- MongoDB Atlas account (free)
-- Clerk account (free)
-- OpenRouter account (free)
+- MongoDB Atlas account
+- Clerk account
+- OpenRouter API key
 
 ### Installation
 
@@ -51,7 +41,7 @@ npm install
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000)
+Open http://localhost:3000
 
 ### Environment Variables
 
@@ -70,107 +60,96 @@ NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL=/dashboard
 OPENROUTER_API_KEY=sk-or-v1-...
 ```
 
----
+## Available Scripts
 
-## 🔧 API Routes
+- `npm run dev` - Start development server
+- `npm run build` - Create production build
+- `npm run start` - Run production server
+- `npm run lint` - Run ESLint
+
+## API Routes
 
 | Method | Endpoint | Description |
 |--------|----------|-------------|
-| GET | `/api/resume` | Get all user resumes |
-| POST | `/api/resume` | Create new resume |
-| GET | `/api/resume/[id]` | Get single resume |
-| PUT | `/api/resume/[id]` | Update resume |
-| DELETE | `/api/resume/[id]` | Delete resume |
-| POST | `/api/ai` | Generate resume with AI |
+| POST | `/api/ai` | Generate resume summary, skills, and experience from prompt |
+| POST | `/api/ats` | Analyze resume text vs job description and return ATS result |
+| GET | `/api/resume` | Get current user's resumes |
+| POST | `/api/resume` | Create a new resume |
+| GET | `/api/resume/[id]` | Get one resume by id (owner only) |
+| PUT | `/api/resume/[id]` | Update one resume by id (owner only) |
+| DELETE | `/api/resume/[id]` | Delete one resume by id (owner only) |
 
----
+## Data Model
 
-## 💾 Data Model
-
-```typescript
+```ts
 {
-  userId: string,
-  name: string,
-  email: string,
-  phone: string,
-  linkedin: string,
-  summary: string,
-  skills: string[],
-  experience: [{ company, role, description }],
-  education: [{ college, degree, year }],
-  projects: [{ title, description, tech }],
-  template: "classic" | "modern" | "minimal",
-  createdAt: Date
+  userId: string;
+  name: string;
+  email?: string;
+  phone?: string;
+  linkedin?: string;
+  summary?: string;
+  skills: string[];
+  experience: { company?: string; role?: string; description?: string }[];
+  education: { college?: string; degree?: string; year?: string }[];
+  projects: { title?: string; description?: string; tech?: string }[];
+  template: string;
+  createdAt: Date;
+  updatedAt: Date;
 }
 ```
 
----
+## Project Structure
 
-## 📦 Dependencies
-
-**Production:** `next` · `react` · `@clerk/nextjs` · `mongoose` · `html2pdf.js`
-
-**Dev:** `typescript` · `tailwindcss` · `eslint`
-
----
-
-## 👤 Author
-
-**Bramha Vinayak Gulavani**
-- GitHub: [@bramhagulavani](https://github.com/bramhagulavani)
-- LinkedIn: [linkedin.com/in/bramhagulavani](https://linkedin.com/in/bramhagulavani)
-
-
-## 📁 Project Structure
-
-```
+```text
 resumecraft/
-├── app/
-│   ├── (dashboard)/                  # Protected routes (require authentication)
-│   │   ├── layout.tsx                # Dashboard layout with Sidebar + Topbar
-│   │   ├── builder/
-│   │   │   └── page.tsx               # Resume builder with live preview
-│   │   ├── dashboard/
-│   │   │   └── page.tsx               # Resume management dashboard
-│   │   ├── resume/
-│   │   │   └── [id]/
-│   │   │       ├── page.tsx           # Resume display view
-│   │   │       └── Resumedownloadbutton.tsx
-│   │   └── templates/
-│   │       └── page.tsx               # Templates showcase
-│   ├── api/
-│   │   ├── ai/
-│   │   │   └── route.ts               # AI resume generation
-│   │   └── resume/
-│   │       ├── route.ts               # GET all & POST create
-│   │       └── [id]/
-│   │           └── route.ts           # GET single, PUT update, DELETE
-│   ├── sign-in/
-│   │   └── [[...sign-in]]/
-│   │       └── page.tsx               # Clerk sign-in page
-│   ├── sign-up/
-│   │   └── [[...sign-up]]/
-│   │       └── page.tsx               # Clerk sign-up page
-│   ├── layout.tsx                    # Root layout with ClerkProvider
-│   ├── page.tsx                      # Landing page (public)
-│   └── globals.css                    # Global styles
-├── components/
-│   ├── layout/
-│   │   ├── Sidebar.tsx                # Navigation sidebar
-│   │   └── Topbar.tsx                 # Top navigation with UserButton
-│   └── resumeTemplates/
-│       ├── types.ts                   # TypeScript interfaces
-│       ├── ClassicTemplate.tsx        # Classic resume template
-│       ├── ModernTemplate.tsx         # Modern resume template
-│       └── MinimalTemplate.tsx        # Minimal resume template
-├── lib/
-│   └── mongodb.ts                     # MongoDB connection utility
-├── models/
-│   └── Resume.ts                      # Resume Mongoose schema
-├── middleware.ts                       # Route protection with Clerk
-├── package.json                       # Dependencies
-├── tsconfig.json                      # TypeScript config
-├── next.config.ts                     # Next.js config
-└── postcss.config.mjs                 # PostCSS config
+|- app/
+|  |- (dashboard)/
+|  |  |- ats/page.tsx
+|  |  |- builder/page.tsx
+|  |  |- dashboard/page.tsx
+|  |  |- resume/[id]/
+|  |  |  |- page.tsx
+|  |  |  |- ResumeDownloadButton.tsx
+|  |  |- templates/page.tsx
+|  |- api/
+|  |  |- ai/route.ts
+|  |  |- ats/route.ts
+|  |  |- resume/
+|  |  |  |- route.ts
+|  |  |  |- [id]/route.ts
+|  |- sign-in/[[...sign-in]]/page.tsx
+|  |- sign-up/[[...sign-up]]/page.tsx
+|  |- globals.css
+|  |- layout.tsx
+|  |- page.tsx
+|- components/
+|  |- layout/
+|  |  |- Sidebar.tsx
+|  |  |- Topbar.tsx
+|  |- resumeTemplates/
+|  |  |- ClassicTemplate.tsx
+|  |  |- MinimalTemplate.tsx
+|  |  |- ModernTemplate.tsx
+|  |  |- types.ts
+|  |- ui/
+|  |  |- Toast.tsx
+|  |  |- ToastProvider.tsx
+|  |- ThemeProvider.tsx
+|- lib/mongodb.ts
+|- models/Resume.ts
+|- middleware.ts
+|- package.json
 ```
+
+## Notes
+
+- Protected UI routes are handled via Clerk middleware.
+- API routes also validate authentication and user ownership where applicable.
+
+## Author
+
+- Bramha Vinayak Gulavani
+- GitHub: https://github.com/bramhagulavani
+- LinkedIn: https://linkedin.com/in/bramhagulavani
 
